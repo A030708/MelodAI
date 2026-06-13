@@ -1,0 +1,228 @@
+/* ── Admin Dashboard: Spotify Design System ── */
+
+.spotify-dashboard .admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.spotify-dashboard .stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: background 0.3s ease;
+}
+
+.spotify-dashboard .stat-card:hover {
+  background: var(--bg-highlight);
+}
+
+.spotify-dashboard .stat-value {
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #7c5cff, var(--spotify-green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.spotify-dashboard .stat-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spotify-dashboard .admin-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.spotify-dashboard .admin-panels-single {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.spotify-dashboard .admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  font-size: 13px;
+}
+
+.spotify-dashboard .admin-table th {
+  text-align: left;
+  padding: 0 16px 8px 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  border: none;
+}
+
+.spotify-dashboard .admin-table td {
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  font-size: 14px;
+  color: var(--text-base);
+  border: none;
+}
+
+.spotify-dashboard .admin-table td:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  font-weight: 600;
+}
+
+.spotify-dashboard .admin-table td:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.spotify-dashboard .admin-table tr:hover td {
+  background: var(--bg-elevated);
+}
+
+.spotify-dashboard .admin-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.spotify-dashboard .activity-feed {
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spotify-dashboard .activity-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spotify-dashboard .activity-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.spotify-dashboard .activity-time {
+  margin-left: auto;
+  color: var(--text-subdued);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ── Section header ── */
+
+.spotify-dashboard .spotify-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.spotify-dashboard .spotify-section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* ── Spotify-style buttons (reused from artist theme) ── */
+
+.spotify-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  padding: 8px 32px;
+  border-radius: 500px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.05s ease, background 0.2s ease;
+  text-decoration: none;
+  line-height: 1;
+  min-height: 48px;
+}
+
+.spotify-btn:hover {
+  transform: scale(1.04);
+}
+
+.spotify-btn:active {
+  transform: scale(0.98);
+}
+
+.spotify-btn-primary {
+  background: var(--spotify-green);
+  color: #000000;
+}
+
+.spotify-btn-primary:hover {
+  background: #33ff7a;
+}
+
+.spotify-btn-secondary {
+  background: transparent;
+  color: var(--text-base);
+  border: 1px solid #7c7c7c;
+}
+
+.spotify-btn-secondary:hover {
+  border-color: var(--text-base);
+}
+
+.spotify-btn-red {
+  background: transparent;
+  color: var(--text-negative);
+  border: 1px solid var(--text-negative);
+}
+
+.spotify-btn-red:hover {
+  background: var(--text-negative);
+  color: #000;
+}
+
+.spotify-btn-small {
+  min-height: 36px;
+  padding: 6px 20px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+}
+
+@media (max-width: 768px) {
+  .spotify-dashboard .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .spotify-dashboard .admin-panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-dashboard .admin-stats {
+    grid-template-columns: 1fr;
+  }
+}

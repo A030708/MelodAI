@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+{% block title %}Upload Song{% endblock %}
+{% block subtitle %}Add new music to the platform{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='artist.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <!-- ── Tab bar ── -->
+  <div class="upload-tab-bar">
+    <button class="upload-tab active" id="tab-single" onclick="switchTab('single')">🎵 Single Upload</button>
+    <button class="upload-tab" id="tab-bulk" onclick="switchTab('bulk')">📦 Bulk Upload</button>
+  </div>
+
+  <!-- ── SINGLE UPLOAD ── -->
+  <div id="panel-single" class="spotify-card" style="max-width:560px;">
+    <div class="spotify-card-header">
+      <div class="spotify-card-title">Upload Song</div>
+      <div class="spotify-card-sub">MP3, WAV, FLAC, OGG supported. Max 50 MB.</div>
+    </div>
+
+    <div class="spotify-msg-error" id="form-error" style="display:none;"></div>
+
+    <form class="spotify-form" id="upload-form" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div class="spotify-form-group">
+        <label>Title</label>
+        <input class="spotify-input" name="title" id="upload-title" type="text" placeholder="Song title">
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Genre</label>
+        <input class="spotify-input" name="genre" type="text" placeholder="Leave empty to auto-detect">
+        <div style="font-size:11px;color:var(--text-subdued);margin-top:2px;">Optional — will be detected from audio if left blank</div>
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Album</label>
+        <select class="spotify-select" name="album_id">
+          <option value="">None (Single)</option>
+          {% for a in albums %}
+            <option value="{{ a.id }}">{{ a.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Audio File</label>
+        <div class="upload-drop-zone" id="audio-drop-zone">
+          <div class="upload-drop-icon">🎵</div>
+          <div class="upload-drop-text">Drag & drop your audio file here</div>
+          <div class="upload-drop-sub">or click anywhere in this box</div>
+          <div class="upload-file-name" id="audio-name"></div>
+        </div>
+        <input type="file" name="audio" id="audio-file" accept=".mp3,.wav,.m4a,.flac,.ogg" class="upload-hidden-input">
+        <button type="button" class="upload-browse-btn" id="audio-browse-btn">Browse Files…</button>
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Cover Art <span style="font-size:11px;color:var(--text-subdued);">(optional)</span></label>
+        <div class="upload-drop-zone upload-drop-zone-small" id="cover-drop-zone">
+          <div class="upload-drop-icon">🖼️</div>
+          <div class="upload-drop-text">Drag & drop cover image here</div>
+          <div class="upload-drop-sub">PNG, JPG</div>
+          <div class="upload-file-name" id="cover-name"></div>
+        </div>
+        <input type="file" name="cover" id="cover-file" accept="image/*" class="upload-hidden-input">
+        <button type="button" class="upload-browse-btn" id="cover-browse-btn">Browse Images…</button>
+      </div>
+
+      <div class="spotify-form-group">
+        <label>🎨 AI Generate Cover Art</label>
+        <div style="display:flex;gap:8px;">
+          <input class="spotify-input" id="cover-prompt" type="text" placeholder="e.g. Neon cyberpunk city at night, synthwave style" style="flex:1;">
+          <button type="button" id="gen-cover-btn" class="spotify-btn spotify-btn-primary spotify-btn-small" style="min-height:44px;padding:8px 20px;white-space:nowrap;font-size:12px;">✨ Generate</button>
+        </div>
+        <div id="ai-cover-preview" style="width:100%;height:140px;border-radius:8px;background:var(--spotify-surface-elevated);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;overflow:hidden;border:1px solid var(--border-default);margin-top:8px;transition:all 0.3s;background-size:cover;background-position:center;cursor:pointer;" onclick="document.getElementById('cover-file').click()">
+          <span id="ai-cover-placeholder" style="opacity:0.4;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;">🎨<br>Generated preview</span>
+        </div>
+        <input type="hidden" name="cover_prompt" id="cover-prompt-hidden" value="">
+        <div style="font-size:11px;color:var(--text-subdued);margin-top:2px;">Describe the vibe and click Generate. The AI creates a unique cover instantly. You can also upload manually above.</div>
+      </div>
+
+      <button class="spotify-btn spotify-btn-primary spotify-btn-full" type="submit" id="upload-btn">Upload</button>
+    </form>
+  </div>
+
+  <!-- ── BULK UPLOAD ── -->
+  <div id="panel-bulk" class="spotify-card" style="max-width:640px;display:none;">
+    <div class="spotify-card-header">
+      <div class="spotify-card-title">Bulk Upload</div>
+      <div class="spotify-card-sub">Upload multiple songs at once. Titles are auto-detected from filenames.</div>
+    </div>
+
+    <div class="spotify-msg-error" id="bulk-form-error" style="display:none;"></div>
+
+    <form class="spotify-form" id="bulk-form" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div class="spotify-form-group">
+        <label>Genre (applied to all)</label>
+        <input class="spotify-input" name="genre" id="bulk-genre" type="text" placeholder="Leave empty to auto-detect each song">
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Album</label>
+        <select class="spotify-select" name="album_id">
+          <option value="">None (Singles)</option>
+          {% for a in albums %}
+            <option value="{{ a.id }}">{{ a.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Audio Files — select multiple</label>
+        <div class="upload-drop-zone" id="bulk-drop-zone" style="min-height:120px;">
+          <div class="upload-drop-icon">📦</div>
+          <div class="upload-drop-text">Drag & drop multiple audio files here</div>
+          <div class="upload-drop-sub">or click to select — MP3, WAV, FLAC, OGG</div>
+          <div id="bulk-file-list" style="margin-top:12px;width:100%;"></div>
+        </div>
+        <input type="file" name="audio_files" id="bulk-audio-files" accept=".mp3,.wav,.m4a,.flac,.ogg" class="upload-hidden-input" multiple>
+        <button type="button" class="upload-browse-btn" id="bulk-browse-btn">Choose Files…</button>
+        <div style="font-size:11px;color:var(--text-subdued);margin-top:4px;">Titles are derived from filenames. You can rename them after upload.</div>
+      </div>
+
+      <button class="spotify-btn spotify-btn-primary spotify-btn-full" type="submit" id="bulk-upload-btn">Upload All (0 files)</button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Upload Progress Overlay ── -->
+<div class="upload-overlay" id="upload-overlay" style="display:none;">
+  <div class="upload-modal upload-modal-wide">
+    <div class="upload-modal-title" id="modal-title">Uploading…</div>
+
+    <!-- Phase 1: Upload progress -->
+    <div id="phase-upload" class="upload-phase">
+      <div class="upload-progress-track">
+        <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="upload-progress-pct" id="upload-pct">0%</div>
+    </div>
+
+    <!-- Phase 2: Processing steps (single) -->
+    <div id="phase-process" class="upload-phase" style="display:none;">
+      <div class="upload-step-list">
+        <div class="upload-step" id="step-transcode">
+          <span class="upload-step-dot processing"></span>
+          <span>Transcoding audio…</span>
+        </div>
+        <div class="upload-step" id="step-covergen">
+          <span class="upload-step-dot pending"></span>
+          <span>Generating cover art…</span>
+        </div>
+        <div class="upload-step" id="step-publish">
+          <span class="upload-step-dot pending"></span>
+          <span>Publishing & notifying…</span>
+        </div>
+      </div>
+      <div class="upload-pulse-ring"></div>
+    </div>
+
+    <!-- Phase 3: Bulk progress list -->
+    <div id="phase-bulk-progress" class="upload-phase" style="display:none;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="bulk-progress-count">0 / 0 songs processed</div>
+      <div id="bulk-progress-list" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+
+    <!-- Phase 4: Done -->
+    <div id="phase-done" class="upload-phase" style="display:none;">
+      <div class="upload-done-icon" id="done-icon">✅</div>
+      <div class="upload-done-msg" id="done-msg">Your song is live!</div>
+      <div class="upload-done-actions">
+        <a class="spotify-btn spotify-btn-primary" href="{{ url_for('artist.dashboard') }}">Go to Dashboard</a>
+        <button class="spotify-btn spotify-btn-outline" onclick="resetUpload()">Upload More</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+.upload-modal-wide { max-width: 520px; }
+.upload-tab-bar { display:flex;gap:0;margin-bottom:20px;max-width:560px; }
+.upload-tab { flex:1;padding:12px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border:1px solid var(--border-default);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;transition:all 0.2s;font-family:inherit; }
+.upload-tab:first-child { border-radius:500px 0 0 500px; }
+.upload-tab:last-child { border-radius:0 500px 500px 0; }
+.upload-tab.active { background:var(--spotify-green);color:#000;border-color:var(--spotify-green); }
+#bulk-file-list .bulk-file-item { display:flex;align-items:center;gap:8px;padding:4px 8px;background:rgba(255,255,255,0.04);border-radius:6px;font-size:12px;margin-bottom:3px; }
+#bulk-file-list .bulk-file-item .bfi-icon { font-size:14px; }
+#bulk-file-list .bulk-file-item .bfi-name { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-base); }
+#bulk-file-list .bulk-file-item .bfi-size { color:var(--text-subdued);font-size:10px;white-space:nowrap; }
+</style>
+
+<script>
+(function() {
+  /* ── Tab switching ── */
+  window.switchTab = function(name) {
+    document.querySelectorAll('.upload-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('panel-single').style.display = name === 'single' ? '' : 'none';
+    document.getElementById('panel-bulk').style.display = name === 'bulk' ? '' : 'none';
+  };
+
+  try {
+    if (localStorage.getItem('melodai_upload_tab') === 'bulk') {
+      switchTab('bulk');
+      localStorage.removeItem('melodai_upload_tab');
+    }
+  } catch(e) {}
+
+  /* ── Drop zone helper ── */
+  function wireDropZone(zoneId, inputId, nameId, browseId, isMulti) {
+    var zone  = document.getElementById(zoneId);
+    var inp   = document.getElementById(inputId);
+    var lbl   = document.getElementById(nameId);
+    var btn   = document.getElementById(browseId);
+
+    zone.addEventListener('click', function() { inp.click(); });
+    if (btn) btn.addEventListener('click', function() { inp.click(); });
+
+    function updateLabel() {
+      if (isMulti) {
+        var list = document.getElementById('bulk-file-list');
+        if (!list) return;
+        list.innerHTML = '';
+        for (var i = 0; i < inp.files.length; i++) {
+          var f = inp.files[i];
+          var size = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB';
+          list.innerHTML += '<div class="bulk-file-item"><span class="bfi-icon">🎵</span><span class="bfi-name">' + f.name + '</span><span class="bfi-size">' + size + '</span></div>';
+        }
+        document.getElementById('bulk-upload-btn').textContent = 'Upload All (' + inp.files.length + ' file' + (inp.files.length !== 1 ? 's' : '') + ')';
+        if (inp.files.length) zone.classList.add('has-file'); else zone.classList.remove('has-file');
+      } else {
+        if (inp.files.length) {
+          lbl.textContent = inp.files[0].name;
+          zone.classList.add('has-file');
+        } else {
+          lbl.textContent = '';
+          zone.classList.remove('has-file');
+        }
+      }
+    }
+
+    inp.addEventListener('change', updateLabel);
+
+    zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', function()  { zone.classList.remove('dragover'); });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        inp.files = e.dataTransfer.files;
+        updateLabel();
+      }
+    });
+  }
+
+  wireDropZone('audio-drop-zone', 'audio-file', 'audio-name', 'audio-browse-btn', false);
+  wireDropZone('cover-drop-zone', 'cover-file', 'cover-name', 'cover-browse-btn', false);
+  wireDropZone('bulk-drop-zone', 'bulk-audio-files', null, 'bulk-browse-btn', true);
+
+  /* ── AI Cover Generator ── */
+  var genBtn = document.getElementById('gen-cover-btn');
+  var promptInput = document.getElementById('cover-prompt');
+  var previewEl = document.getElementById('ai-cover-preview');
+  var placeholderEl = document.getElementById('ai-cover-placeholder');
+  var hiddenPrompt = document.getElementById('cover-prompt-hidden');
+  var hiddenGenCover = null;
+
+  if (genBtn && promptInput) {
+    genBtn.addEventListener('click', function() {
+      var text = promptInput.value.trim();
+      if (!text) { showFormError(errEl, 'Enter a description first.'); return; }
+
+      genBtn.disabled = true;
+      genBtn.textContent = '⏳ Generating…';
+      if (placeholderEl) placeholderEl.textContent = '🎨\nGenerating…';
+
+      fetch('/api/generate-cover', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ prompt: text })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.cover_url) {
+          previewEl.style.backgroundImage = 'url(' + data.cover_url + ')';
+          if (placeholderEl) placeholderEl.style.display = 'none';
+          hiddenPrompt.value = text;
+
+          // Create or update hidden field for generated cover
+          if (!hiddenGenCover) {
+            hiddenGenCover = document.createElement('input');
+            hiddenGenCover.type = 'hidden';
+            hiddenGenCover.name = 'generated_cover';
+            document.getElementById('upload-form').appendChild(hiddenGenCover);
+          }
+          hiddenGenCover.value = data.cover_filename;
+          showToast('✨ Cover art generated!');
+        } else {
+          showFormError(errEl, data.error || 'Generation failed.');
+          if (placeholderEl) placeholderEl.textContent = '🎨\nPreview';
+        }
+      })
+      .catch(function() {
+        showFormError(errEl, 'Network error. Try again.');
+        if (placeholderEl) placeholderEl.textContent = '🎨\nPreview';
+      })
+      .finally(function() {
+        genBtn.disabled = false;
+        genBtn.textContent = '✨ Generate';
+      });
+    });
+  }
+
+  /* ── Shared overlay elements ── */
+  var overlay = document.getElementById('upload-overlay');
+  var fill = document.getElementById('upload-progress-fill');
+  var pctEl = document.getElementById('upload-pct');
+
+  function resetOverlay() {
+    document.getElementById('phase-upload').style.display = '';
+    document.getElementById('phase-process').style.display = 'none';
+    document.getElementById('phase-bulk-progress').style.display = 'none';
+    document.getElementById('phase-done').style.display = 'none';
+    fill.style.width = '0%';
+    pctEl.textContent = '0%';
+  }
+
+  /* ── Single upload ── */
+  var singleForm = document.getElementById('upload-form');
+  var errEl = document.getElementById('form-error');
+  function showFormError(el, msg) {
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(function(){ el.style.display = 'none'; }, 5000);
+  }
+
+  singleForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    errEl.style.display = 'none';
+    var title = document.getElementById('upload-title').value.trim();
+    var audio = document.getElementById('audio-file');
+    if (!title) { showFormError(errEl, 'Title is required.'); return; }
+    if (!audio.files.length) { showFormError(errEl, 'Please select an audio file.'); return; }
+
+    overlay.style.display = 'flex';
+    resetOverlay();
+    document.getElementById('modal-title').textContent = 'Uploading…';
+    document.getElementById('upload-btn').disabled = true;
+
+    var fd = new FormData(singleForm);
+    var xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', function(ev) {
+      if (ev.lengthComputable) {
+        var pct = Math.round(ev.loaded / ev.total * 100);
+        fill.style.width = pct + '%'; pctEl.textContent = pct + '%';
+      }
+    });
+    xhr.addEventListener('load', function() {
+      if (xhr.status === 202) {
+        var data = JSON.parse(xhr.responseText);
+        startPolling(data.song_id);
+      } else {
+        var err = 'Upload failed.';
+        try { err = JSON.parse(xhr.responseText).error || err; } catch(_){}
+        showFailure(err);
+      }
+    });
+    xhr.addEventListener('error', function() { showFailure('Network error.'); });
+    xhr.open('POST', '{{ url_for("artist.upload") }}');
+    xhr.send(fd);
+  });
+
+  /* ── Single upload polling ── */
+  var pollTimer = null;
+  function startPolling(songId) {
+    document.getElementById('phase-upload').style.display = 'none';
+    document.getElementById('phase-process').style.display = '';
+    document.getElementById('modal-title').textContent = 'Processing…';
+
+    var stepIdx = 0;
+    var steps = ['step-transcode', 'step-covergen', 'step-publish'];
+
+    pollTimer = setInterval(function() {
+      stepIdx++;
+      if (stepIdx < steps.length) {
+        for (var s = 0; s < stepIdx; s++) {
+          document.querySelector('#' + steps[s] + ' .upload-step-dot').className = 'upload-step-dot done';
+        }
+        document.querySelector('#' + steps[stepIdx] + ' .upload-step-dot').className = 'upload-step-dot processing';
+      }
+      fetch('/api/upload-status/' + songId)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.status === 'ready') {
+            clearInterval(pollTimer);
+            steps.forEach(function(id) {
+              document.querySelector('#' + id + ' .upload-step-dot').className = 'upload-step-dot done';
+            });
+            setTimeout(function() { showSuccess(); }, 600);
+          } else if (d.status === 'failed') {
+            clearInterval(pollTimer);
+            showFailure('Processing failed.');
+          }
+        });
+    }, 3000);
+  }
+
+  function showSuccess() {
+    document.getElementById('phase-process').style.display = 'none';
+    document.getElementById('phase-bulk-progress').style.display = 'none';
+    document.getElementById('phase-done').style.display = '';
+    document.getElementById('modal-title').textContent = 'Done!';
+    document.getElementById('done-icon').textContent = '✅';
+    document.getElementById('done-msg').textContent = 'Your song is live!';
+    document.getElementById('upload-btn').disabled = false;
+  }
+
+  function showFailure(msg) {
+    document.getElementById('phase-process').style.display = 'none';
+    document.getElementById('phase-bulk-progress').style.display = 'none';
+    document.getElementById('phase-done').style.display = '';
+    document.getElementById('modal-title').textContent = 'Error';
+    document.getElementById('done-icon').textContent = '❌';
+    document.getElementById('done-msg').textContent = msg || 'Something went wrong.';
+    document.getElementById('upload-btn').disabled = false;
+  }
+
+  window.resetUpload = function() {
+    overlay.style.display = 'none';
+    document.getElementById('upload-btn').disabled = false;
+    document.getElementById('bulk-upload-btn').disabled = false;
+    resetOverlay();
+    ['step-transcode','step-covergen','step-publish'].forEach(function(id, i) {
+      document.querySelector('#' + id + ' .upload-step-dot').className = 'upload-step-dot ' + (i === 0 ? 'processing' : 'pending');
+    });
+  };
+
+  /* ── Bulk upload ── */
+  var bulkForm = document.getElementById('bulk-form');
+  var bulkErrEl = document.getElementById('bulk-form-error');
+  var bulkListEl = document.getElementById('bulk-progress-list');
+  var bulkCountEl = document.getElementById('bulk-progress-count');
+
+  bulkForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var files = document.getElementById('bulk-audio-files').files;
+    if (!files.length) { showFormError(bulkErrEl, 'Select at least one audio file.'); return; }
+
+    overlay.style.display = 'flex';
+    resetOverlay();
+    document.getElementById('phase-upload').style.display = 'none';
+    document.getElementById('phase-bulk-progress').style.display = '';
+    document.getElementById('modal-title').textContent = 'Processing ' + files.length + ' songs…';
+    document.getElementById('bulk-upload-btn').disabled = true;
+
+    bulkListEl.innerHTML = '';
+    for (var i = 0; i < files.length; i++) {
+      bulkListEl.innerHTML += '<div class="upload-step" id="bulk-item-' + i + '"><span class="upload-step-dot pending"></span><span>' + files[i].name + '</span></div>';
+    }
+    bulkCountEl.textContent = '0 / ' + files.length + ' songs processed';
+
+    var fd = new FormData(bulkForm);
+    // Files are already in the FormData from the <input> element — do NOT append again
+
+    var xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', function(ev) {
+      if (ev.lengthComputable) {
+        var pct = Math.round(ev.loaded / ev.total * 100);
+        bulkCountEl.textContent = 'Uploading… ' + pct + '% (' + ev.loaded + ' / ' + ev.total + ' bytes)';
+      }
+    });
+    xhr.addEventListener('load', function() {
+      if (xhr.status === 202) {
+        var data = JSON.parse(xhr.responseText);
+        if (data.songs && data.songs.length > 0) {
+          pollBulkProgress(data.songs);
+        } else {
+          showFailure(data.error || 'No songs were processed.');
+          document.getElementById('bulk-upload-btn').disabled = false;
+        }
+      } else {
+        var err = 'Bulk upload failed (HTTP ' + xhr.status + ').';
+        try { var j = JSON.parse(xhr.responseText); err = j.error || err; } catch(_){}
+        showFailure(err);
+        document.getElementById('bulk-upload-btn').disabled = false;
+      }
+    });
+    xhr.addEventListener('error', function() {
+      showFailure('Network error. Check your connection or file sizes.');
+      document.getElementById('bulk-upload-btn').disabled = false;
+    });
+    xhr.open('POST', '{{ url_for("artist.bulk_upload") }}');
+    xhr.send(fd);
+  });
+
+  function pollBulkProgress(songs) {
+    var total = songs.length;
+    var ready = 0;
+    var failed = 0;
+    var skipped = 0;
+
+    // Mark songs that were skipped (duplicate, unsupported) immediately
+    songs.forEach(function(s, idx) {
+      if (s.status === 'skipped') {
+        s._done = true;
+        skipped++;
+        var dot = document.querySelector('#bulk-item-' + idx + ' .upload-step-dot');
+        dot.className = 'upload-step-dot';
+        dot.style.background = '#f39c12';
+        var label = document.querySelector('#bulk-item-' + idx + ' span:last-child');
+        if (label) label.textContent += ' — ' + (s.error || 'skipped');
+      }
+    });
+    window._bulkSkipped = skipped;
+    bulkCountEl.textContent = (ready + failed + skipped) + ' / ' + total + ' songs processed';
+
+    // If every song was immediately marked done (all skipped), finish now
+    if (ready + failed + skipped === total) {
+      bulkDone(ready, failed);
+      return;
+    }
+
+    function checkAll() {
+      var done = 0;
+      songs.forEach(function(s, idx) {
+        if (s._done) { done++; return; }
+        if (!s.song_id) {
+          s._done = true; failed++; return;
+        }
+        fetch('/api/upload-status/' + s.song_id)
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.status === 'ready' || d.status === 'failed') {
+              s._done = true;
+              var dot = document.querySelector('#bulk-item-' + idx + ' .upload-step-dot');
+              if (d.status === 'ready') {
+                dot.className = 'upload-step-dot done';
+                ready++;
+              } else {
+                dot.className = 'upload-step-dot';
+                dot.style.background = '#f3727f';
+                failed++;
+              }
+              bulkCountEl.textContent = (ready + failed + skipped) + ' / ' + total + ' songs processed';
+              if (ready + failed + skipped === total) {
+                bulkDone(ready, failed);
+              }
+            }
+          });
+      });
+      if (ready + failed + skipped < total) {
+        setTimeout(checkAll, 2000);
+      }
+    }
+
+    checkAll();
+  }
+
+  function bulkDone(ready, failed) {
+    document.getElementById('modal-title').textContent = 'Bulk Upload Complete';
+    document.getElementById('phase-bulk-progress').style.display = 'none';
+    document.getElementById('phase-done').style.display = '';
+    document.getElementById('done-icon').textContent = ready > 0 ? '✅' : '❌';
+    var skipped = window._bulkSkipped || 0;
+    var msg = ready + ' song' + (ready !== 1 ? 's' : '') + ' uploaded';
+    if (failed > 0) msg += ', ' + failed + ' failed';
+    if (skipped > 0) msg += ', ' + skipped + ' skipped';
+    document.getElementById('done-msg').textContent = msg;
+    document.getElementById('bulk-upload-btn').disabled = false;
+  }
+})();
+</script>
+{% endblock %}

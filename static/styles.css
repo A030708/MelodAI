@@ -1,0 +1,2348 @@
+/* ============================================================
+   SPOTIFY-INSPIRED DESIGN SYSTEM
+   MelodAI — Content-first darkness
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ── Brand ── */
+  --spotify-green: #1ed760;
+  --spotify-green-dark: #1db954;
+
+  /* ── Backgrounds (Depth Levels) ── */
+  --bg-base: #121212;       /* Level 0 — deepest */
+  --bg-surface: #181818;    /* Level 1 — cards, sidebar */
+  --bg-elevated: #1f1f1f;   /* Level 2 — interactive */
+  --bg-highlight: #252525;  /* Level 3 — hover states */
+  --bg-hover: #2a2a2a;      /* Level 4 — active hover */
+
+  /* ── Text ── */
+  --text-base: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #a7a7a7;
+  --text-subdued: #6a6a6a;
+
+  /* ── Semantic ── */
+  --text-negative: #f3727f;
+  --text-warning: #ffa42b;
+  --text-announcement: #539df5;
+
+  /* ── Borders ── */
+  --border-default: #282828;
+  --border-hover: #3e3e3e;
+  --border-active: #535353;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 8px 24px rgba(0,0,0,0.5);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-dialog: 0 16px 48px rgba(0,0,0,0.6);
+
+  /* ── Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-pill: 500px;
+  --radius-full: 9999px;
+  --radius-circle: 50%;
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', 'CircularSp', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: var(--text-base);
+  background: var(--bg-base);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ── Playlist ── */
+.muted { color: var(--text-secondary); }
+.small { font-size: 12px; }
+
+/* ── Audio Visualizer ── */
+#visualizer-canvas {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.6;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hover);
+  color: var(--text-base);
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+/* ============================================================
+   TOP NAVIGATION BAR
+   ============================================================ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(18,18,18,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-circle);
+  background: var(--spotify-green);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #000000;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--text-subdued);
+  margin-top: 1px;
+  letter-spacing: 0.2px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.controls > span {
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================================
+   BUTTONS — Pill geometry, uppercase labels
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text-base);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--bg-highlight);
+  transform: scale(1.03);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn.primary {
+  background: var(--spotify-green);
+  color: #000000;
+  font-weight: 800;
+}
+
+.btn.primary:hover {
+  background: #1fdf64;
+  box-shadow: 0 4px 16px rgba(30,215,96,0.3);
+  transform: scale(1.05);
+}
+
+.btn.success {
+  background: var(--spotify-green);
+  color: #000000;
+  font-weight: 800;
+}
+
+.btn.success:hover {
+  background: #1fdf64;
+}
+
+.btn.danger {
+  background: rgba(243,114,127,0.15);
+  color: var(--text-negative);
+  border: 1px solid rgba(243,114,127,0.3);
+}
+
+.btn.danger:hover {
+  background: rgba(243,114,127,0.25);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-active);
+}
+
+.btn.ghost:hover {
+  color: var(--text-base);
+  background: rgba(255,255,255,0.05);
+  border-color: var(--text-secondary);
+}
+
+.btn.link {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+}
+
+.btn.link:hover {
+  color: var(--text-base);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--text-base);
+  border: 1px solid var(--border-active);
+}
+
+.btn.secondary:hover {
+  border-color: var(--text-base);
+}
+
+/* ── Chips (pill tags) ── */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  cursor: default;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   LAYOUT — Sidebar + Content
+   ============================================================ */
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  padding: 0;
+  min-height: calc(100vh - 65px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  background: var(--bg-base);
+  border-right: 1px solid var(--border-default);
+  overflow-y: auto;
+}
+
+.content {
+  padding: 24px;
+  background: var(--bg-base);
+  overflow-y: auto;
+  /* Subtle gradient from top for depth */
+  background:
+    linear-gradient(180deg, rgba(30,215,96,0.06) 0%, transparent 300px),
+    var(--bg-base);
+}
+
+/* ============================================================
+   PANELS — Sidebar cards
+   ============================================================ */
+
+.panel {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.panel-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
+}
+
+.reset-form {
+  margin-top: 12px;
+}
+
+/* ── Trending ── */
+
+.trending {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trending li {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.trending li:hover {
+  background: var(--bg-elevated);
+}
+
+.t-title {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--text-base);
+}
+
+.t-artist {
+  font-size: 12px;
+  color: var(--text-subdued);
+  margin-top: 2px;
+}
+
+.t-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--spotify-green);
+  font-weight: 600;
+}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* ============================================================
+   SONG CARD GRID
+   ============================================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  transition: background 0.2s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.card:hover {
+  background: var(--bg-highlight);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* ── Cover Art ── */
+
+.cover {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-placeholder {
+  font-size: 28px;
+  color: var(--text-subdued);
+  opacity: 0.5;
+}
+
+/* ── Play button overlay on cover ── */
+.card:hover .cover::after {
+  content: '▶';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.5);
+  color: var(--spotify-green);
+  font-size: 20px;
+  border-radius: var(--radius-md);
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Song Meta ── */
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.song-title {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  margin-top: 3px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Badge ── */
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  background: rgba(30,215,96,0.12);
+  color: var(--spotify-green);
+  border: 1px solid rgba(30,215,96,0.2);
+}
+
+.score {
+  font-size: 11px;
+  color: var(--text-subdued);
+  font-weight: 500;
+}
+
+/* ── Tags ── */
+
+.tags {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ============================================================
+   AUDIO PLAYER — Custom styling
+   ============================================================ */
+
+.audio-wrapper {
+  margin-top: 8px;
+}
+
+audio.rec-audio-player {
+  width: 100%;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  outline: none;
+}
+
+/* Webkit custom audio styling */
+audio::-webkit-media-controls-panel {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-pill);
+}
+
+audio::-webkit-media-controls-play-button {
+  background-color: var(--spotify-green);
+  border-radius: var(--radius-circle);
+}
+
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.quality-toggle {
+  margin-top: 5px;
+}
+
+.btn-quality {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-subdued);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.btn-quality:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-base);
+}
+
+.buffer-bar-container {
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.buffer-bar {
+  height: 100%;
+  background: var(--spotify-green);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+/* ── Preview/Processing badges ── */
+
+.badge-full {
+  background: rgba(30,215,96,0.12);
+  color: var(--spotify-green);
+  border: 1px solid rgba(30,215,96,0.25);
+}
+
+.badge-preview {
+  background: rgba(255,164,43,0.1);
+  color: var(--text-warning);
+  border: 1px solid rgba(255,164,43,0.2);
+}
+
+.badge-processing {
+  background: rgba(83,157,245,0.1);
+  color: var(--text-announcement);
+  border: 1px solid rgba(83,157,245,0.2);
+  animation: pulse-soft 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.processing-text,
+.no-preview-text {
+  font-size: 11px;
+  color: var(--text-subdued);
+  margin: 4px 0;
+  font-style: italic;
+}
+
+/* ============================================================
+   ACTIONS — Play / Like / Skip buttons row
+   ============================================================ */
+
+.actions {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actions form {
+  margin: 0;
+}
+
+.actions .btn {
+  padding: 6px 14px;
+  font-size: 11px;
+}
+
+/* ============================================================
+   CONTROLS — Genre / Alpha / K form row
+   ============================================================ */
+
+.control label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-subdued);
+  margin-bottom: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.control input,
+.control select {
+  width: 140px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  color: var(--text-base);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.control input:focus,
+.control select:focus {
+  border-color: var(--spotify-green-dark);
+  box-shadow: 0 0 0 3px rgba(30,215,96,0.12);
+}
+
+.control.checkbox input {
+  width: auto;
+  padding: 0;
+}
+
+.checkrow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+}
+
+.checklabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+  padding: 24px;
+  color: var(--text-subdued);
+  font-size: 11px;
+  text-align: center;
+  border-top: 1px solid var(--border-default);
+  background: var(--bg-base);
+  letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   AUTH PAGES — Login & Register
+   ============================================================ */
+
+.auth-page {
+  min-height: calc(100vh - 65px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(30,215,96,0.08) 0%, transparent 50%),
+    var(--bg-base);
+}
+
+.layout:has(.auth-page) {
+  display: block;
+  padding: 0;
+}
+
+.layout:has(.spotify-dashboard) {
+  display: block;
+  padding: 0;
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-circle);
+  background: var(--spotify-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #000;
+}
+
+.auth-brand-name {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--text-base);
+}
+
+.auth-brand-sub {
+  font-size: 13px;
+  color: var(--text-subdued);
+  letter-spacing: 0.2px;
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.auth-card-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 20%,
+    rgba(30,215,96,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.auth-card-content {
+  position: relative;
+  padding: 40px 32px;
+  z-index: 1;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.auth-error {
+  background: rgba(243,114,127,0.08);
+  border: 1px solid rgba(243,114,127,0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-negative);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-success {
+  background: rgba(30,215,96,0.08);
+  border: 1px solid rgba(30,215,96,0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--spotify-green);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.invite-code-box {
+  margin-top: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  background: rgba(0,0,0,0.3);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-base);
+  word-break: break-all;
+  border: 1px solid var(--border-default);
+}
+
+.invite-link-box {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-subdued);
+  word-break: break-all;
+}
+
+.auth-textarea {
+  min-height: 72px;
+  padding: 14px !important;
+  line-height: 1.5;
+}
+
+.send-invite-btn {
+  margin-top: 14px !important;
+  background: var(--spotify-green) !important;
+  color: #000 !important;
+}
+
+.send-invite-btn:hover {
+  box-shadow: 0 8px 24px rgba(30,215,96,0.3) !important;
+}
+
+.send-invite-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ── Auth Tabs (User / Artist toggle) ── */
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+}
+
+.auth-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-subdued);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.auth-tab:hover {
+  color: var(--text-base);
+  background: rgba(255,255,255,0.05);
+}
+
+.auth-tab.active {
+  background: var(--spotify-green);
+  color: #000;
+}
+
+.auth-tab-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.auth-tab-label {
+  font-size: 12px;
+}
+
+.auth-form-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: -8px 0 8px 0;
+  line-height: 1.4;
+}
+
+/* ── Auth Fields ── */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.auth-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input-wrap:focus-within {
+  border-color: var(--spotify-green-dark);
+  box-shadow: 0 0 0 3px rgba(30,215,96,0.1);
+}
+
+.auth-input-wrap.error {
+  border-color: rgba(243,114,127,0.4);
+  box-shadow: 0 0 0 3px rgba(243,114,127,0.08);
+}
+
+.auth-input-icon {
+  padding: 0 0 0 16px;
+  font-size: 15px;
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 14px 16px 14px 10px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-base);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.auth-input::placeholder {
+  color: var(--text-subdued);
+}
+
+.auth-field-error {
+  font-size: 11px;
+  color: var(--text-negative);
+  min-height: 16px;
+  line-height: 1.3;
+  padding: 0 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.auth-field-error.visible {
+  opacity: 1;
+}
+
+/* ── Auth Button (big green pill) ── */
+
+.auth-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--spotify-green);
+  color: #000000;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.15s ease;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.auth-btn:hover {
+  transform: scale(1.02);
+  background: #1fdf64;
+  box-shadow: 0 8px 24px rgba(30,215,96,0.35);
+}
+
+.auth-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Auth Footer ── */
+
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-subdued);
+}
+
+.auth-link {
+  color: var(--text-base);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+.auth-link:hover {
+  color: var(--spotify-green);
+}
+
+/* ============================================================
+   ONBOARDING — Chip select
+   ============================================================ */
+
+.auth-wrap {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.chip-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-hover);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.chip-select:hover {
+  background: var(--bg-highlight);
+  border-color: var(--border-active);
+  color: var(--text-base);
+}
+
+.chip-select:has(input:checked) {
+  background: rgba(30,215,96,0.15);
+  border-color: var(--spotify-green);
+  color: var(--spotify-green);
+}
+
+.chip-select input { display: none; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border-default);
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .sidebar .panel {
+    min-width: 200px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .control input,
+  .control select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 10px 16px;
+  }
+
+  .auth-card-content {
+    padding: 28px 20px;
+  }
+
+  .auth-brand-name {
+    font-size: 24px;
+  }
+
+  .auth-logo {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .card {
+    flex-direction: column;
+  }
+
+  .cover {
+    width: 100%;
+    height: 140px;
+  }
+}
+
+/* ============================================================
+   SCROLLBAR — Dark themed
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-highlight);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+
+::selection {
+  background: rgba(30,215,96,0.3);
+  color: var(--text-base);
+}
+
+/* ============================================================
+   MINI PLAYER — Fixed bottom bar
+   ============================================================ */
+
+#mini-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+  padding: 8px 16px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+  overflow: visible;
+}
+
+#mp-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#mp-info {
+  min-width: 180px;
+  max-width: 260px;
+  flex-shrink: 0;
+}
+
+#mp-title {
+  font-weight: 700;
+  font-size: 13px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#mp-artist {
+  font-size: 11px;
+  color: var(--text-subdued);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#mp-progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+#mp-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+#mp-progress-fill {
+  height: 100%;
+  background: var(--spotify-green);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+#mp-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+#mp-controls button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: var(--radius-full);
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+  font-family: inherit;
+}
+
+#mp-controls button:hover {
+  color: var(--text-base);
+  background: rgba(255,255,255,0.06);
+}
+
+#mp-play {
+  font-size: 22px !important;
+  color: var(--text-base) !important;
+}
+
+#mp-queue-btn {
+  font-size: 14px !important;
+  position: relative;
+}
+
+#mp-q-count {
+  font-size: 10px;
+  background: var(--spotify-green);
+  color: #000;
+  border-radius: var(--radius-circle);
+  padding: 1px 5px;
+  font-weight: 800;
+  vertical-align: top;
+  margin-left: 2px;
+}
+
+/* ── Queue Panel ── */
+
+#queue-panel {
+  position: fixed;
+  bottom: 70px;
+  right: 16px;
+  width: 320px;
+  max-height: 400px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-dialog);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#qp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-default);
+  font-size: 13px;
+}
+
+#qp-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.qp-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  cursor: grab;
+  transition: background 0.1s;
+}
+
+.qp-item:hover {
+  background: var(--bg-elevated);
+}
+
+.qp-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.qp-item-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qp-item-artist {
+  font-size: 10px;
+  color: var(--text-subdued);
+}
+
+.qp-item-remove {
+  background: none;
+  border: none;
+  color: var(--text-subdued);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+}
+
+#qp-clear-wrap {
+  padding: 8px;
+  border-top: 1px solid var(--border-default);
+}
+
+.footer {
+  padding-bottom: 80px !important;
+}
+
+body {
+  padding-bottom: 60px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Upload Page — Drop zones, Progress, Overlay
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Drop zone ── */
+.upload-drop-zone {
+  position: relative;
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-xl, 12px);
+  padding: 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .25s, background .25s;
+  margin-bottom: 16px;
+}
+.upload-drop-zone:hover,
+.upload-drop-zone.dragover {
+  border-color: var(--spotify-green, #1db954);
+  background: rgba(29, 185, 84, 0.06);
+}
+.upload-drop-zone.has-file {
+  border-color: var(--spotify-green, #1db954);
+  border-style: solid;
+}
+
+.upload-drop-icon {
+  font-size: 36px;
+  margin-bottom: 6px;
+}
+.upload-drop-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+.upload-drop-sub {
+  font-size: 12px;
+  color: var(--text-subdued, #999);
+  margin-top: 2px;
+}
+.upload-file-name {
+  font-size: 12px;
+  color: var(--spotify-green, #1db954);
+  margin-top: 8px;
+  font-weight: 600;
+  word-break: break-all;
+}
+.upload-drop-zone-small {
+  padding: 20px 16px;
+}
+
+/* ── Hidden file input (outside drop zone) ── */
+.upload-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+/* ── Browse button ── */
+.upload-browse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-elevated, #282828);
+  color: var(--text-primary, #fff);
+  border: 1px solid var(--border-default, #444);
+  border-radius: 500px;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .05s;
+  margin-top: 4px;
+}
+.upload-browse-btn:hover {
+  background: var(--bg-surface, #333);
+  border-color: var(--spotify-green, #1db954);
+  transform: scale(1.02);
+}
+.upload-browse-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Overlay ── */
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(6px);
+}
+.upload-modal {
+  background: var(--bg-surface, #181818);
+  border: 1px solid var(--border-default, #333);
+  border-radius: var(--radius-xl, 12px);
+  padding: 36px 32px 28px;
+  width: 420px;
+  max-width: 92vw;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(0,0,0,.6);
+}
+.upload-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+  margin-bottom: 24px;
+}
+
+/* ── Progress bar ── */
+.upload-progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-elevated, #282828);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.upload-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1db954, #1ed760);
+  border-radius: 5px;
+  transition: width .3s ease;
+}
+.upload-progress-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--spotify-green, #1db954);
+  margin-top: 8px;
+}
+
+/* ── Step indicators ── */
+.upload-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 0 auto;
+  max-width: 280px;
+}
+.upload-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-secondary, #b3b3b3);
+}
+.upload-step-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background .3s, box-shadow .3s;
+}
+.upload-step-dot.pending {
+  background: var(--bg-elevated, #282828);
+  border: 2px solid var(--border-default, #444);
+}
+.upload-step-dot.processing {
+  background: var(--spotify-green, #1db954);
+  box-shadow: 0 0 8px rgba(29, 185, 84, .6);
+  animation: pulse-dot 1.2s infinite ease-in-out;
+}
+.upload-step-dot.done {
+  background: var(--spotify-green, #1db954);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.35); opacity: .7; }
+}
+
+/* ── Pulse ring ── */
+.upload-pulse-ring {
+  width: 48px;
+  height: 48px;
+  margin: 24px auto 0;
+  border: 3px solid var(--spotify-green, #1db954);
+  border-radius: 50%;
+  animation: pulse-ring 1.5s infinite ease-out;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(.8); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ── Done / Failure ── */
+.upload-done-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.upload-done-msg {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+  margin-bottom: 20px;
+}
+.upload-done-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.spotify-btn-outline {
+  background: transparent;
+  border: 1px solid var(--spotify-green, #1db954);
+  color: var(--spotify-green, #1db954);
+  padding: 10px 20px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.spotify-btn-outline:hover {
+  background: var(--spotify-green, #1db954);
+  color: #000;
+}
+
+/* =============================================================
+   LOGIN PAGE BACKGROUND — Appended to styles.css
+   Nothing above this comment is modified
+   ============================================================= */
+
+/* ── Full page background with the music image ─────────────── */
+
+.login-bg-page {
+    min-height          : 100vh;
+    width               : 100%;
+    background-image    : url('/static/bg/signin_baxckground.jpeg');
+    background-size     : cover;
+    background-position : center center;
+    background-repeat   : no-repeat;
+    background-attachment: fixed;
+    position            : relative;
+}
+
+/* ── Dark overlay on top of image so card is readable ───────── */
+
+.login-bg-page::before {
+    content    : '';
+    position   : fixed;
+    inset      : 0;
+    background : linear-gradient(
+        135deg,
+        rgba(0,  0,  0,  0.72) 0%,
+        rgba(2,  11, 24, 0.65) 40%,
+        rgba(0,  0,  0,  0.80) 100%
+    );
+    z-index    : 0;
+    pointer-events : none;
+}
+
+/* ── Make sure all login page content sits above the overlay ── */
+
+.login-bg-page > * {
+    position : relative;
+    z-index  : 1;
+}
+
+/* ── Navbar sits above overlay ─────────────────────────────── */
+
+/* ── Let the image show through auth-page's solid background ── */
+.login-bg-page .auth-page {
+    background : transparent;
+}
+
+.login-bg-page .navbar,
+.login-bg-page nav,
+.login-bg-page header {
+    position : relative;
+    z-index  : 10;
+    background : rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter : blur(12px);
+    border-bottom : 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Login card — enhanced glassmorphism to blend with image ── */
+
+.login-bg-page .login-card,
+.login-bg-page .auth-card,
+.login-bg-page .card,
+.login-bg-page form {
+    background      : rgba(10, 10, 20, 0.72) !important;
+    backdrop-filter : blur(28px) saturate(1.4) !important;
+    -webkit-backdrop-filter : blur(28px) saturate(1.4) !important;
+    border          : 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow      : 0 8px 48px rgba(0, 0, 0, 0.60),
+                      0 0 0 1px rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── Input fields — slightly more visible on the busy bg ────── */
+
+.login-bg-page input[type="text"],
+.login-bg-page input[type="email"],
+.login-bg-page input[type="password"] {
+    background : rgba(255, 255, 255, 0.09) !important;
+    border     : 1px solid rgba(255, 255, 255, 0.14) !important;
+    color      : #ffffff !important;
+}
+
+.login-bg-page input[type="text"]:focus,
+.login-bg-page input[type="email"]:focus,
+.login-bg-page input[type="password"]:focus {
+    background   : rgba(255, 255, 255, 0.13) !important;
+    border-color : rgba(29, 185, 84, 0.55) !important;
+    outline      : none !important;
+    box-shadow   : 0 0 0 3px rgba(29, 185, 84, 0.12) !important;
+}
+
+/* ── Logo area above the card ───────────────────────────────── */
+
+.login-bg-page .login-logo,
+.login-bg-page .brand-section {
+    text-shadow : 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+
+/* ── MelodAI title text — add subtle glow on busy background ── */
+
+.login-bg-page .brand-name,
+.login-bg-page h1,
+.login-bg-page .app-name {
+    text-shadow : 0 0 24px rgba(29, 185, 84, 0.35),
+                  0 2px 8px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* ── Sign in button — keep the green prominent ──────────────── */
+
+.login-bg-page .btn-primary,
+.login-bg-page button[type="submit"],
+.login-bg-page .sign-in-btn {
+    box-shadow : 0 4px 24px rgba(29, 185, 84, 0.35),
+                 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Subtext and helper text readability ────────────────────── */
+
+.login-bg-page p,
+.login-bg-page span,
+.login-bg-page label,
+.login-bg-page a {
+    text-shadow : 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* =============================================================
+   LOGIN CARD FIX — Card must stand out from background
+   ============================================================= */
+
+.login-bg-page .login-card,
+.login-bg-page .auth-card,
+.login-bg-page .card,
+.login-bg-page .login-box,
+.login-bg-page form.login-form,
+.login-bg-page .login-container > div,
+.login-bg-page .form-wrapper {
+    background      : rgba(8, 8, 18, 0.82) !important;
+    backdrop-filter : blur(32px) saturate(1.6) brightness(1.1) !important;
+    -webkit-backdrop-filter : blur(32px) saturate(1.6) brightness(1.1) !important;
+    border          : 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius   : 20px !important;
+    box-shadow      :
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 8px 32px rgba(0, 0, 0, 0.70),
+        0 32px 80px rgba(0, 0, 0, 0.50),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+    padding         : 40px !important;
+}
+
+.login-bg-page .login-card h1,
+.login-bg-page .login-card h2,
+.login-bg-page .auth-card h1,
+.login-bg-page .auth-card h2,
+.login-bg-page h1.login-title,
+.login-bg-page h2.login-title {
+    color       : #ffffff !important;
+    font-weight : 700 !important;
+    font-size   : 26px !important;
+    text-shadow : 0 2px 12px rgba(0, 0, 0, 0.8) !important;
+    margin-bottom : 6px !important;
+}
+
+.login-bg-page .login-card p,
+.login-bg-page .auth-card p,
+.login-bg-page .login-subtitle {
+    color : rgba(255, 255, 255, 0.60) !important;
+    font-size : 14px !important;
+}
+
+.login-bg-page label,
+.login-bg-page .form-label {
+    color         : rgba(255, 255, 255, 0.55) !important;
+    font-size     : 11px !important;
+    font-weight   : 700 !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase !important;
+}
+
+.login-bg-page input[type="text"],
+.login-bg-page input[type="email"],
+.login-bg-page input[type="password"] {
+    background    : rgba(255, 255, 255, 0.10) !important;
+    border        : 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius : 10px !important;
+    color         : #ffffff !important;
+    font-size     : 15px !important;
+    padding       : 13px 16px !important;
+    width         : 100% !important;
+    box-sizing    : border-box !important;
+    transition    : all 0.2s ease !important;
+}
+
+.login-bg-page input[type="text"]:focus,
+.login-bg-page input[type="email"]:focus,
+.login-bg-page input[type="password"]:focus {
+    background    : rgba(255, 255, 255, 0.14) !important;
+    border-color  : rgba(29, 185, 84, 0.60) !important;
+    box-shadow    : 0 0 0 3px rgba(29, 185, 84, 0.15) !important;
+    outline       : none !important;
+}
+
+.login-bg-page input::placeholder {
+    color : rgba(255, 255, 255, 0.30) !important;
+}
+
+.login-bg-page button[type="submit"],
+.login-bg-page .btn-signin,
+.login-bg-page input[type="submit"],
+.login-bg-page .sign-in-btn {
+    background    : #1db954 !important;
+    color         : #ffffff !important;
+    border        : none !important;
+    border-radius : 26px !important;
+    font-size     : 15px !important;
+    font-weight   : 800 !important;
+    letter-spacing: 1px !important;
+    padding       : 14px !important;
+    width         : 100% !important;
+    cursor        : pointer !important;
+    transition    : all 0.2s ease !important;
+    box-shadow    : 0 4px 24px rgba(29, 185, 84, 0.40) !important;
+}
+
+.login-bg-page button[type="submit"]:hover,
+.login-bg-page .btn-signin:hover {
+    background    : #1ed760 !important;
+    transform     : scale(1.02) !important;
+    box-shadow    : 0 6px 32px rgba(29, 185, 84, 0.55) !important;
+}
+
+.login-bg-page a {
+    color : rgba(255, 255, 255, 0.65) !important;
+}
+
+.login-bg-page a:hover {
+    color : #1db954 !important;
+}
+
+.login-bg-page::before {
+    background : linear-gradient(
+        135deg,
+        rgba(0,  0,  0,  0.60) 0%,
+        rgba(2,  11, 24, 0.50) 40%,
+        rgba(0,  0,  0,  0.68) 100%
+    ) !important;
+}
+
+/* =============================================================
+   LOGIN PAGE NAVBAR — Glassmorphism top bar
+   ============================================================= */
+
+.login-bg-page nav,
+.login-bg-page .navbar,
+.login-bg-page header,
+.login-bg-page .top-bar,
+.login-bg-page .nav-bar {
+    background      : rgba(0, 0, 0, 0.35) !important;
+    backdrop-filter : blur(20px) saturate(1.4) !important;
+    -webkit-backdrop-filter : blur(20px) saturate(1.4) !important;
+    border-bottom   : 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow      : 0 4px 24px rgba(0, 0, 0, 0.30) !important;
+    position        : relative !important;
+    z-index         : 100 !important;
+}
+
+.login-bg-page .navbar .brand,
+.login-bg-page .navbar .app-name,
+.login-bg-page nav .brand-name,
+.login-bg-page .nav-brand {
+    color       : #ffffff !important;
+    font-weight : 700 !important;
+    text-shadow : 0 1px 8px rgba(0, 0, 0, 0.6) !important;
+}
+
+.login-bg-page .navbar .subtitle,
+.login-bg-page .nav-subtitle,
+.login-bg-page .navbar small,
+.login-bg-page .navbar p {
+    color : rgba(255, 255, 255, 0.50) !important;
+}
+
+.login-bg-page .navbar .logo-circle,
+.login-bg-page .nav-logo {
+    box-shadow : 0 0 16px rgba(29, 185, 84, 0.45) !important;
+}
+
+/* =============================================================
+   PERSISTENT PLAYER — Hide on all non-recommendation pages
+   ============================================================= */
+
+body.login-bg-page #mini-player,
+body.login-bg-page #persistent-player,
+body.login-bg-page .player-bar,
+body.login-bg-page .bottom-player,
+body.login-bg-page #bottom-player,
+body.login-bg-page .now-playing-bar,
+body.login-bg-page #now-playing-bar,
+body.login-bg-page .music-player-footer {
+    display : none !important;
+}
+
+body.register-page #mini-player,
+body.register-page #persistent-player,
+body.register-page .player-bar,
+body.register-page .bottom-player,
+body.register-page #bottom-player,
+body.register-page .now-playing-bar,
+body.register-page #now-playing-bar,
+body.register-page .music-player-footer {
+    display : none !important;
+}
+
+body.onboarding-page #mini-player,
+body.onboarding-page #persistent-player,
+body.onboarding-page .player-bar,
+body.onboarding-page .bottom-player,
+body.onboarding-page #bottom-player,
+body.onboarding-page .now-playing-bar,
+body.onboarding-page #now-playing-bar,
+body.onboarding-page .music-player-footer {
+    display : none !important;
+}
+
+body.artist-page #mini-player,
+body.artist-page #persistent-player,
+body.artist-page .player-bar,
+body.artist-page .bottom-player,
+body.artist-page #bottom-player,
+body.artist-page .now-playing-bar,
+body.artist-page #now-playing-bar,
+body.artist-page .music-player-footer {
+    display : none !important;
+}
+
+body.admin-page #mini-player,
+body.admin-page #persistent-player,
+body.admin-page .player-bar,
+body.admin-page .bottom-player,
+body.admin-page #bottom-player,
+body.admin-page .now-playing-bar,
+body.admin-page #now-playing-bar,
+body.admin-page .music-player-footer {
+    display : none !important;
+}
+
+/* =============================================================
+   AUTH PAGES — Login and Register
+   Complete redesign matching the dark premium screenshot
+   ============================================================= */
+
+.auth-page-wrapper {
+    position   : fixed;
+    inset      : 0;
+    width      : 100vw;
+    height     : 100vh;
+    overflow-y : auto;
+    background-image    : url('/static/bg/signin_baxckground.jpeg');
+    background-size     : cover;
+    background-position : center center;
+    background-repeat   : no-repeat;
+    display             : flex;
+    align-items         : center;
+    justify-content     : center;
+    padding             : 40px 16px;
+    box-sizing          : border-box;
+}
+
+.auth-bg-overlay {
+    position   : fixed;
+    inset      : 0;
+    background : linear-gradient(
+        160deg,
+        rgba(0,   0,  0, 0.55) 0%,
+        rgba(5,  10, 30, 0.50) 50%,
+        rgba(0,   0,  0, 0.62) 100%
+    );
+    z-index    : 0;
+    pointer-events : none;
+}
+
+.auth-page-content {
+    position        : relative;
+    z-index         : 1;
+    display         : flex;
+    flex-direction  : column;
+    align-items     : center;
+    width           : 100%;
+    max-width       : 420px;
+}
+
+.auth-logo-section {
+    text-align    : center;
+    margin-bottom : 28px;
+}
+
+.auth-logo-circle {
+    width           : 64px;
+    height          : 64px;
+    background      : #1db954;
+    border-radius   : 50%;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+    margin          : 0 auto 14px;
+    font-size       : 28px;
+    box-shadow      : 0 0 28px rgba(29, 185, 84, 0.55),
+                      0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.auth-brand-name {
+    font-size   : 28px;
+    font-weight : 800;
+    color       : #ffffff;
+    margin      : 0 0 6px;
+    letter-spacing : -0.5px;
+    text-shadow : 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+
+.auth-brand-subtitle {
+    font-size   : 14px;
+    color       : rgba(255, 255, 255, 0.55);
+    margin      : 0;
+    text-shadow : 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.auth-card {
+    width           : 100%;
+    background      : rgba(15, 15, 25, 0.88);
+    backdrop-filter : blur(40px) saturate(1.5);
+    -webkit-backdrop-filter : blur(40px) saturate(1.5);
+    border-radius   : 20px;
+    border          : 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow      :
+        0 2px 0 rgba(255, 255, 255, 0.05) inset,
+        0 24px 64px rgba(0, 0, 0, 0.70),
+        0 8px 24px rgba(0, 0, 0, 0.50);
+    padding         : 40px 36px 36px;
+    box-sizing      : border-box;
+}
+
+.auth-card-title {
+    font-size     : 26px;
+    font-weight   : 700;
+    color         : #ffffff;
+    text-align    : center;
+    margin        : 0 0 8px;
+    letter-spacing: -0.3px;
+}
+
+.auth-card-subtitle {
+    font-size   : 14px;
+    color       : rgba(255, 255, 255, 0.50);
+    text-align  : center;
+    margin      : 0 0 28px;
+    line-height : 1.5;
+}
+
+.auth-flash {
+    border-radius : 10px;
+    padding       : 12px 16px;
+    font-size     : 13px;
+    margin-bottom : 16px;
+    text-align    : center;
+}
+
+.auth-flash-error,
+.auth-flash-danger {
+    background : rgba(231, 76, 60, 0.18);
+    border     : 1px solid rgba(231, 76, 60, 0.35);
+    color      : #ff6b6b;
+}
+
+.auth-flash-success {
+    background : rgba(29, 185, 84, 0.15);
+    border     : 1px solid rgba(29, 185, 84, 0.30);
+    color      : #1db954;
+}
+
+.auth-flash-info {
+    background : rgba(52, 152, 219, 0.15);
+    border     : 1px solid rgba(52, 152, 219, 0.30);
+    color      : #74b9ff;
+}
+
+.auth-field-group {
+    margin-bottom : 20px;
+}
+
+.auth-field-label {
+    display       : block;
+    font-size     : 11px;
+    font-weight   : 700;
+    letter-spacing: 1.3px;
+    color         : rgba(255, 255, 255, 0.50);
+    margin-bottom : 8px;
+    text-transform: uppercase;
+}
+
+.auth-input-wrapper {
+    display         : flex;
+    align-items     : center;
+    background      : rgba(255, 255, 255, 0.08);
+    border          : 1px solid rgba(255, 255, 255, 0.12);
+    border-radius   : 50px;
+    padding         : 0 18px;
+    transition      : all 0.25s ease;
+    height          : 52px;
+}
+
+.auth-input-wrapper:focus-within {
+    background      : rgba(255, 255, 255, 0.12);
+    border-color    : rgba(29, 185, 84, 0.55);
+    box-shadow      : 0 0 0 3px rgba(29, 185, 84, 0.12);
+}
+
+.auth-input-icon {
+    font-size     : 16px;
+    margin-right  : 10px;
+    opacity       : 0.55;
+    flex-shrink   : 0;
+    line-height   : 1;
+}
+
+.auth-input {
+    flex        : 1;
+    background  : transparent !important;
+    border      : none !important;
+    outline     : none !important;
+    color       : #ffffff !important;
+    font-size   : 15px !important;
+    padding     : 0 !important;
+    margin      : 0 !important;
+    box-shadow  : none !important;
+    height      : 100%;
+    font-family : inherit;
+}
+
+.auth-input::placeholder {
+    color : rgba(255, 255, 255, 0.28) !important;
+}
+
+.auth-input-wrapper input,
+.auth-input-wrapper input:focus,
+.auth-input-wrapper input:active {
+    background      : transparent !important;
+    border          : none !important;
+    outline         : none !important;
+    box-shadow      : none !important;
+    -webkit-appearance : none !important;
+}
+
+.auth-submit-btn {
+    width           : 100%;
+    height          : 52px;
+    background      : #1db954;
+    color           : #ffffff;
+    border          : none;
+    border-radius   : 50px;
+    font-size       : 15px;
+    font-weight     : 800;
+    letter-spacing  : 1.5px;
+    cursor          : pointer;
+    margin-top      : 28px;
+    transition      : all 0.2s ease;
+    box-shadow      : 0 4px 20px rgba(29, 185, 84, 0.40);
+    display         : block;
+    text-align      : center;
+    font-family     : inherit;
+}
+
+.auth-submit-btn:hover {
+    background  : #1ed760;
+    transform   : scale(1.02);
+    box-shadow  : 0 6px 28px rgba(29, 185, 84, 0.55);
+}
+
+.auth-submit-btn:active {
+    transform  : scale(0.98);
+}
+
+.auth-bottom-text {
+    text-align  : center;
+    font-size   : 14px;
+    color       : rgba(255, 255, 255, 0.45);
+    margin      : 20px 0 0;
+}
+
+.auth-bottom-link {
+    color           : rgba(255, 255, 255, 0.85) !important;
+    font-weight     : 700;
+    text-decoration : underline;
+    text-underline-offset : 2px;
+    transition      : color 0.2s ease;
+}
+
+.auth-bottom-link:hover {
+    color : #1db954 !important;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding       : 32px 24px 28px;
+        border-radius : 16px;
+    }
+
+    .auth-brand-name {
+        font-size : 24px;
+    }
+
+    .auth-card-title {
+        font-size : 22px;
+    }
+
+    .auth-input-wrapper {
+        height : 48px;
+    }
+
+    .auth-submit-btn {
+        height : 48px;
+    }
+}
+
+.auth-page-wrapper ~ nav,
+.auth-page-wrapper ~ header,
+.auth-page-wrapper ~ .navbar,
+.auth-page-wrapper ~ #persistent-player,
+.auth-page-wrapper ~ .player-bar,
+.auth-page-wrapper ~ .bottom-player,
+.auth-page-wrapper ~ #bottom-player,
+.auth-page-wrapper ~ .now-playing-bar,
+.auth-page-wrapper ~ #now-playing-bar,
+.auth-page-wrapper ~ .music-player-footer {
+    display : none !important;
+}
+
+body:has(.auth-page-wrapper) #persistent-player,
+body:has(.auth-page-wrapper) .player-bar,
+body:has(.auth-page-wrapper) .bottom-player,
+body:has(.auth-page-wrapper) #bottom-player,
+body:has(.auth-page-wrapper) .now-playing-bar,
+body:has(.auth-page-wrapper) #now-playing-bar,
+body:has(.auth-page-wrapper) .music-player-footer,
+body:has(.auth-page-wrapper) nav,
+body:has(.auth-page-wrapper) header,
+body:has(.auth-page-wrapper) .navbar {
+    display : none !important;
+}

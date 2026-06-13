@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}User Management{% endblock %}
+{% block subtitle %}Manage platform users{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ users|length }}</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+  </div>
+
+  <div class="spotify-section-header"><h2>All Users</h2></div>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td><span class="chip">{{ u.role }}</span></td>
+        <td>
+          {% if u.is_active %}
+            <span class="chip" style="background:rgba(30,215,96,0.12);color:var(--spotify-green);border-color:rgba(30,215,96,0.2);">Active</span>
+          {% else %}
+            <span class="chip" style="background:rgba(243,114,127,0.12);color:var(--text-negative);border-color:rgba(243,114,127,0.2);">Banned</span>
+          {% endif %}
+        </td>
+        <td>{{ u.created_at[:10] }}</td>
+        <td>
+          {% if u.is_active %}
+            <form method="POST" action="/admin/users/{{ u.id }}/ban" style="display:inline;">
+              <button class="spotify-btn spotify-btn-red spotify-btn-small">Ban</button>
+            </form>
+          {% else %}
+            <form method="POST" action="/admin/users/{{ u.id }}/activate" style="display:inline;">
+              <button class="spotify-btn spotify-btn-small" style="background:var(--spotify-green);color:#000;border:none;">Activate</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="admin-actions">
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/dashboard">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

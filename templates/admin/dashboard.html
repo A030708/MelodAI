@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block subtitle %}Platform Analytics & Control{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ total_users }}</div>
+      <div class="stat-label">Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ total_artists }}</div>
+      <div class="stat-label">Artists</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ total_songs }}</div>
+      <div class="stat-label">Uploaded Songs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${{ "%.2f"|format(total_earnings) }}</div>
+      <div class="stat-label">Total Earnings</div>
+    </div>
+  </div>
+
+  <div class="admin-panels">
+    <div class="panel" style="padding:12px;"><div class="panel-title" style="margin-bottom:8px;">User Growth</div><canvas id="userGrowthChart" height="140"></canvas></div>
+    <div class="panel" style="padding:12px;"><div class="panel-title" style="margin-bottom:8px;">Top Songs (Plays)</div><canvas id="topSongsChart" height="140"></canvas></div>
+    <div class="panel" style="padding:12px;"><div class="panel-title" style="margin-bottom:8px;">Genre Distribution</div><canvas id="genreChart" height="140"></canvas></div>
+    <div class="panel" style="padding:12px;"><div class="panel-title" style="margin-bottom:8px;">Recent Activity</div><div id="activityFeed" class="activity-feed" style="max-height:180px;"></div></div>
+  </div>
+
+  <div class="admin-actions">
+    <a class="spotify-btn spotify-btn-primary" href="/admin/users">Manage Users</a>
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/artists">Manage Artists</a>
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/add-artist">Add Artist</a>
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/broadcast">Send Broadcast</a>
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/email-logs">📧 Email Logs</a>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
+<script>
+fetch('/admin/analytics', {credentials: 'same-origin'})
+  .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(function(d) {
+    if (d.user_growth && d.user_growth.length) renderUserGrowth(d.user_growth);
+    if (d.top_songs && d.top_songs.length) renderTopSongs(d.top_songs);
+    if (d.genre_dist && d.genre_dist.length) renderGenreDist(d.genre_dist);
+    if (d.activity && d.activity.length) renderActivity(d.activity);
+  })
+  ['catch'](function(e) { console.error('Analytics error:', e); });
+</script>
+{% endblock %}

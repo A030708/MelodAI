@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile — MelodAI{% endblock %}
+{% block subtitle %}Update your account details{% endblock %}
+{% block content %}
+<section class="content" style="max-width:500px;margin:0 auto;padding:24px;">
+  <form method="POST" style="display:flex;flex-direction:column;gap:16px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <div>
+      <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text-secondary);">Username</label>
+      <input type="text" name="username" value="{{ user.username }}" required
+             style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:14px;">
+    </div>
+
+    <div>
+      <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text-secondary);">Email</label>
+      <input type="email" name="email" value="{{ user.email }}" required
+             style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:14px;">
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button type="submit" class="btn" style="flex:1;">Save Changes</button>
+      <a href="{{ url_for('user.profile') }}" class="btn ghost" style="flex:1;text-align:center;">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

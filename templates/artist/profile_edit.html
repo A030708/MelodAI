@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block subtitle %}Update your artist profile{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='artist.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<style>
+#crop-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+}
+#crop-modal.show {
+  display: flex;
+}
+.crop-modal-box {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+}
+.crop-modal-box h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.crop-modal-box .crop-wrap {
+  max-height: 400px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+.crop-modal-box .crop-wrap img {
+  max-width: 100%;
+  display: block;
+}
+.crop-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="spotify-card">
+    <div class="spotify-card-header">
+      <div class="spotify-card-title">Edit Profile</div>
+      <div class="spotify-card-sub">Update your artist profile and photo</div>
+    </div>
+
+    {% if msg %}
+      <div class="spotify-msg-error">{{ msg }}</div>
+    {% endif %}
+
+    <form class="spotify-form" method="POST" enctype="multipart/form-data" id="profile-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div class="spotify-form-group" style="align-items:center;text-align:center;">
+        <label>Profile Photo</label>
+        <div style="position:relative;display:inline-block;">
+          <div id="avatar-circle" style="width:120px;height:120px;border-radius:50%;overflow:hidden;background:var(--bg-elevated);border:3px solid var(--border-default);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--text-subdued);">
+            {% if artist.profile_pic and artist.profile_pic != 'default_artist.png' %}
+              <img src="/uploads/profiles/{{ artist.profile_pic }}" style="width:100%;height:100%;object-fit:cover;">
+            {% else %}
+              <span>🎵</span>
+            {% endif %}
+          </div>
+          <label for="profile-pic-input" style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--spotify-green);color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700;border:2px solid var(--bg-surface);">✎</label>
+        </div>
+        <input id="profile-pic-input" name="profile_pic" type="file" accept="image/png,image/jpeg" style="display:none;">
+        <div style="font-size:11px;color:var(--text-subdued);margin-top:4px;">PNG or JPG</div>
+        {% if artist.profile_pic and artist.profile_pic != 'default_artist.png' %}
+          <button type="button" id="remove-pic-btn" class="spotify-btn spotify-btn-red spotify-btn-small" style="margin-top:8px;">Remove Photo</button>
+        {% endif %}
+      </div>
+
+      <div class="spotify-form-group">
+        <label>Stage Name</label>
+        <input class="spotify-input" name="stage_name" type="text" value="{{ artist.stage_name }}" required>
+      </div>
+      <div class="spotify-form-group">
+        <label>Genre</label>
+        <input class="spotify-input" name="genre" type="text" value="{{ artist.genre or '' }}" placeholder="Pop, Rock...">
+      </div>
+      <div class="spotify-form-group">
+        <label>Bio</label>
+        <textarea class="spotify-textarea" name="bio" rows="4" placeholder="Tell fans about yourself...">{{ artist.bio or '' }}</textarea>
+      </div>
+      <button class="spotify-btn spotify-btn-primary spotify-btn-full" type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- Cropping Modal -->
+<div id="crop-modal">
+  <div class="crop-modal-box">
+    <h3>Crop Profile Photo</h3>
+    <div class="crop-wrap">
+      <img id="crop-image">
+    </div>
+    <div class="crop-modal-actions">
+      <button id="crop-cancel" class="spotify-btn spotify-btn-secondary spotify-btn-small">Cancel</button>
+      <button id="crop-confirm" class="spotify-btn spotify-btn-primary spotify-btn-small">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script>
+(function() {
+  var cropper = null;
+  var input = document.getElementById('profile-pic-input');
+  var modal = document.getElementById('crop-modal');
+  var cropImg = document.getElementById('crop-image');
+  var circle = document.getElementById('avatar-circle');
+
+  input.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      cropImg.src = ev.target.result;
+      modal.classList.add('show');
+      cropImg.onload = function() {
+        if (cropper) { cropper.destroy(); cropper = null; }
+        cropper = new Cropper(cropImg, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 1,
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          background: false,
+        });
+      };
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('crop-confirm').addEventListener('click', function() {
+    if (!cropper) return;
+    var canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+    canvas.toBlob(function(blob) {
+      var croppedFile = new File([blob], 'profile_cropped.jpg', { type: 'image/jpeg' });
+      var dt = new DataTransfer();
+      dt.items.add(croppedFile);
+      input.files = dt.files;
+      circle.innerHTML = '';
+      var img = document.createElement('img');
+      img.src = canvas.toDataURL('image/jpeg');
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      circle.appendChild(img);
+      modal.classList.remove('show');
+      if (cropper) { cropper.destroy(); cropper = null; }
+    }, 'image/jpeg', 0.95);
+  });
+
+  document.getElementById('crop-cancel').addEventListener('click', function() {
+    modal.classList.remove('show');
+    if (cropper) { cropper.destroy(); cropper = null; }
+    input.value = '';
+  });
+
+  var removeBtn = document.getElementById('remove-pic-btn');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', function() {
+      var f = document.createElement('input');
+      f.type = 'hidden';
+      f.name = 'remove_pic';
+      f.value = '1';
+      document.getElementById('profile-form').appendChild(f);
+      circle.innerHTML = '<span>🎵</span>';
+      input.value = '';
+      removeBtn.disabled = true;
+      removeBtn.textContent = 'Will be removed on save';
+      removeBtn.style.opacity = '0.5';
+    });
+  }
+})();
+</script>
+{% endblock %}

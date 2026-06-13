@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Albums{% endblock %}
+{% block subtitle %}Manage your albums{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='artist.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="spotify-card" style="margin-bottom:24px;">
+    <div class="spotify-card-header">
+      <div class="spotify-card-title">Create Album</div>
+    </div>
+    <form class="spotify-form" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="spotify-form-group">
+        <label>Album Title</label>
+        <input class="spotify-input" name="title" type="text" placeholder="Album name" required>
+      </div>
+      <div class="spotify-form-group">
+        <label>Genre</label>
+        <input class="spotify-input" name="genre" type="text" placeholder="Pop, Rock...">
+      </div>
+      <button class="spotify-btn spotify-btn-primary" type="submit">Create</button>
+    </form>
+  </div>
+
+  <div class="spotify-section-header"><h2>Your Albums</h2></div>
+
+  {% if albums %}
+    <div class="spotify-album-grid">
+      {% for a in albums %}
+        <div class="spotify-album-card">
+          <div class="spotify-album-title">{{ a.title }}</div>
+          <div class="spotify-album-meta">
+            {{ a.genre or 'Various' }} · {{ a.song_count }} songs · {{ a.created_at[:10] }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="spotify-empty">No albums yet. Create one above.</div>
+  {% endif %}
+</div>
+{% endblock %}

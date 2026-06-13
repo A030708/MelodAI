@@ -1,0 +1,506 @@
+/* Spotify Design System for Artist Pages */
+
+:root {
+  --spotify-bg: #121212;
+  --spotify-surface: #181818;
+  --spotify-surface-elevated: #1f1f1f;
+  --spotify-surface-card: #252525;
+  --spotify-green: #1ed760;
+  --spotify-text: #ffffff;
+  --spotify-muted: #b3b3b3;
+  --spotify-border: #4d4d4d;
+  --spotify-shadow-heavy: rgba(0,0,0,0.5) 0px 8px 24px;
+  --spotify-shadow-medium: rgba(0,0,0,0.3) 0px 8px 8px;
+  --spotify-red: #f3727f;
+  --spotify-orange: #ffa42b;
+  --spotify-blue: #539df5;
+  --spotify-font-title: 'SpotifyMixUITitle', 'CircularSp-Arab', 'CircularSp-Hebr', 'CircularSp-Cyrl', 'CircularSp-Grek', 'CircularSp-Deva', 'Helvetica Neue', helvetica, arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, 'MS Gothic', sans-serif;
+  --spotify-font-ui: 'SpotifyMixUI', 'CircularSp-Arab', 'CircularSp-Hebr', 'CircularSp-Cyrl', 'CircularSp-Grek', 'CircularSp-Deva', 'Helvetica Neue', helvetica, arial, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, 'MS Gothic', sans-serif;
+}
+
+/* ── Global overrides when any artist page is active ── */
+
+body:has(.spotify-dashboard) {
+  background: var(--spotify-bg) !important;
+  color: var(--spotify-text);
+  font-family: var(--spotify-font-ui);
+}
+
+body:has(.spotify-dashboard) .topbar {
+  background: var(--spotify-bg) !important;
+  border-bottom: none;
+  box-shadow: var(--spotify-shadow-heavy);
+}
+
+body:has(.spotify-dashboard) .footer {
+  background: var(--spotify-bg) !important;
+  color: var(--spotify-muted);
+}
+
+/* ── Top-level wrapper ── */
+
+.spotify-dashboard {
+  font-family: var(--spotify-font-ui);
+  color: var(--spotify-text);
+  padding: 16px;
+}
+
+.spotify-dashboard h1,
+.spotify-dashboard h2,
+.spotify-dashboard h3 {
+  font-family: var(--spotify-font-title);
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.spotify-dashboard h2 {
+  font-size: 24px;
+}
+
+/* ── Stat cards ── */
+
+.spotify-dashboard .admin-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.spotify-dashboard .stat-card {
+  background: var(--spotify-surface);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--spotify-shadow-medium);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background 0.3s ease;
+}
+
+.spotify-dashboard .stat-card:hover {
+  background: var(--spotify-surface-card);
+}
+
+.spotify-dashboard .stat-value {
+  font-family: var(--spotify-font-title);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--spotify-text);
+}
+
+.spotify-dashboard .stat-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--spotify-muted);
+}
+
+/* ── Chart panels ── */
+
+.spotify-dashboard .panel {
+  background: var(--spotify-surface);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: var(--spotify-shadow-medium);
+  border: none;
+}
+
+.spotify-dashboard .panel-title {
+  font-family: var(--spotify-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--spotify-text);
+}
+
+/* ── Content card (used on upload / albums / profile) ── */
+
+.spotify-card {
+  background: var(--spotify-surface);
+  border-radius: 8px;
+  padding: 28px 24px;
+  box-shadow: var(--spotify-shadow-medium);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.spotify-card-wide {
+  max-width: 680px;
+}
+
+.spotify-card-header {
+  margin-bottom: 24px;
+}
+
+.spotify-card-title {
+  font-family: var(--spotify-font-title);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--spotify-text);
+  margin: 0 0 4px 0;
+}
+
+.spotify-card-sub {
+  font-size: 13px;
+  color: var(--spotify-muted);
+  margin: 0;
+}
+
+/* ── Form elements ── */
+
+.spotify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.spotify-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spotify-form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--spotify-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.spotify-input,
+.spotify-select,
+.spotify-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--spotify-surface-elevated);
+  border: none;
+  border-radius: 500px;
+  color: var(--spotify-text);
+  font-family: var(--spotify-font-ui);
+  font-size: 14px;
+  outline: none;
+  box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
+  transition: box-shadow 0.2s ease;
+}
+
+.spotify-textarea {
+  border-radius: 12px;
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.4;
+}
+
+.spotify-input:focus,
+.spotify-select:focus,
+.spotify-textarea:focus {
+  box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(255,255,255) 0px 0px 0px 1px inset;
+}
+
+.spotify-input::placeholder,
+.spotify-textarea::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+.spotify-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%23b3b3b3'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.spotify-select option {
+  background: var(--spotify-surface);
+  color: var(--spotify-text);
+}
+
+/* File input – hidden behind a styled label */
+
+.spotify-file-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spotify-file-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--spotify-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.spotify-file-input {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--spotify-surface-elevated);
+  border-radius: 500px;
+  color: var(--spotify-muted);
+  font-family: var(--spotify-font-ui);
+  font-size: 13px;
+  box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
+  cursor: pointer;
+}
+
+.spotify-file-input::file-selector-button {
+  background: var(--spotify-surface-card);
+  color: var(--spotify-text);
+  border: none;
+  border-radius: 500px;
+  padding: 6px 16px;
+  margin-right: 12px;
+  font-family: var(--spotify-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.2s ease;
+}
+
+.spotify-file-input::file-selector-button:hover {
+  background: var(--spotify-surface-elevated);
+}
+
+/* ── Error / message box ── */
+
+.spotify-msg-error {
+  background: rgba(243,114,127,0.12);
+  border: 1px solid rgba(243,114,127,0.3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--spotify-red);
+  margin-bottom: 16px;
+}
+
+.spotify-msg-success {
+  background: rgba(30,215,96,0.12);
+  border: 1px solid rgba(30,215,96,0.3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--spotify-green);
+  margin-bottom: 16px;
+}
+
+/* ── Buttons ── */
+
+.spotify-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--spotify-font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  padding: 8px 32px;
+  border-radius: 500px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.05s ease, background 0.2s ease;
+  text-decoration: none;
+  line-height: 1;
+  min-height: 48px;
+}
+
+.spotify-btn:hover {
+  transform: scale(1.04);
+}
+
+.spotify-btn:active {
+  transform: scale(0.98);
+}
+
+.spotify-btn-primary {
+  background: var(--spotify-green);
+  color: #000000;
+}
+
+.spotify-btn-primary:hover {
+  background: #33ff7a;
+}
+
+.spotify-btn-secondary {
+  background: transparent;
+  color: var(--spotify-text);
+  border: 1px solid #7c7c7c;
+}
+
+.spotify-btn-secondary:hover {
+  border-color: var(--spotify-text);
+}
+
+.spotify-btn-dark {
+  background: var(--spotify-surface-elevated);
+  color: var(--spotify-text);
+}
+
+.spotify-btn-dark:hover {
+  background: var(--spotify-surface-card);
+}
+
+.spotify-btn-full {
+  width: 100%;
+}
+
+.spotify-btn-small {
+  min-height: 36px;
+  padding: 6px 20px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+}
+
+.spotify-btn-red {
+  background: transparent;
+  color: var(--spotify-red);
+  border: 1px solid var(--spotify-red);
+}
+
+.spotify-btn-red:hover {
+  background: var(--spotify-red);
+  color: #000;
+}
+
+/* ── Table ── */
+
+.spotify-dashboard .admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  margin-bottom: 24px;
+  table-layout: auto;
+}
+
+.spotify-dashboard .admin-table th {
+  text-align: left;
+  padding: 0 12px 8px 12px;
+  color: var(--spotify-muted);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  border: none;
+  white-space: nowrap;
+}
+
+.spotify-dashboard .admin-table td {
+  padding: 10px 12px;
+  background: var(--spotify-surface);
+  font-size: 13px;
+  color: var(--spotify-text);
+  border: none;
+  white-space: nowrap;
+}
+
+.spotify-dashboard .admin-table td:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  font-weight: 600;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-dashboard .admin-table td:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.spotify-dashboard .admin-table tr:hover td {
+  background: var(--spotify-surface-elevated);
+}
+
+/* Scrollable table wrapper */
+.table-scroll-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Chip / badge ── */
+
+.spotify-dashboard .chip {
+  background: var(--spotify-surface-elevated);
+  color: var(--spotify-text);
+  border: 1px solid var(--spotify-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ── Album grid ── */
+
+.spotify-album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.spotify-album-card {
+  background: var(--spotify-surface);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--spotify-shadow-medium);
+  transition: background 0.3s ease;
+}
+
+.spotify-album-card:hover {
+  background: var(--spotify-surface-card);
+}
+
+.spotify-album-title {
+  font-family: var(--spotify-font-title);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--spotify-text);
+  margin: 0 0 4px 0;
+}
+
+.spotify-album-meta {
+  font-size: 12px;
+  color: var(--spotify-muted);
+  line-height: 1.4;
+}
+
+.spotify-empty {
+  background: var(--spotify-surface);
+  border-radius: 8px;
+  padding: 20px;
+  color: var(--spotify-muted);
+  font-size: 14px;
+  text-align: center;
+  box-shadow: var(--spotify-shadow-medium);
+}
+
+/* ── Section header ── */
+
+.spotify-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.spotify-section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-family: var(--spotify-font-title);
+  font-weight: 700;
+}
+
+/* ── Action buttons row (dashboard) ── */
+
+.spotify-dashboard .btn-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}

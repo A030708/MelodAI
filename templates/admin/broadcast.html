@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Admin Broadcast{% endblock %}
+{% block subtitle %}Send a global notification and email to all users{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-container" style="max-width: 800px; width: 100%;">
+    <div class="auth-card">
+      <div class="auth-card-glow"></div>
+      <div class="auth-card-content">
+        <div class="auth-header">
+          <h2 class="auth-title">Global Broadcast</h2>
+          <p class="auth-sub">Send an announcement to all active users on the platform via email and system notifications.</p>
+        </div>
+
+        {% if msg %}
+          <div class="{% if msg_type == 'error' %}auth-error{% else %}auth-success{% endif %}" style="margin-bottom: 20px; padding: 15px; border-radius: 8px; font-weight: 500;">
+            {{ msg }}
+          </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form">
+          <div class="auth-field">
+            <label class="auth-label" for="subject">Broadcast Subject</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">📣</span>
+              <input class="auth-input" id="subject" name="subject" type="text" placeholder="e.g., Scheduled Maintenance / Big Updates!" required>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="body">Message Content (HTML Supported)</label>
+            <div class="auth-input-wrap" style="align-items: flex-start;">
+              <span class="auth-input-icon" style="padding-top: 14px;">✉️</span>
+              <textarea class="auth-input auth-textarea" id="body" name="body" rows="10" placeholder="<p>Hello music lovers,</p><p>We have exciting news today...</p>" style="resize: vertical; font-family: monospace;" required></textarea>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="target">Target Audience</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">👥</span>
+              <select class="auth-input" id="target" name="target" aria-label="Target Audience">
+                <option value="all">All Users &amp; Artists</option>
+                <option value="users_only">Users Only</option>
+                <option value="artists_only">Artists Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <button class="auth-btn" type="submit" style="flex: 1;">🚀 Dispatch Broadcast</button>
+            <a class="auth-btn" href="/admin/dashboard" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 0 20px;">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

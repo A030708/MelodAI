@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Make an Announcement{% endblock %}
+{% block subtitle %}Share news with your followers{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='artist.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="spotify-card spotify-card-wide">
+    <div class="spotify-card-header">
+      <div class="spotify-card-title">Make an Announcement</div>
+      <div class="spotify-card-sub">Send a message to all your followers</div>
+    </div>
+
+    {% if msg %}
+      <div class="spotify-msg-success">{{ msg }}</div>
+    {% endif %}
+
+    <form class="spotify-form" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="spotify-form-group">
+        <label for="title">Title</label>
+        <input class="spotify-input" id="title" name="title" type="text" placeholder="New single out now!" maxlength="200" required>
+      </div>
+      <div class="spotify-form-group">
+        <label for="message">Message</label>
+        <textarea class="spotify-textarea" id="message" name="message" rows="4" placeholder="Tell your followers what's new..." maxlength="2000" required oninput="charCount(this)"></textarea>
+        <div style="font-size:11px;color:var(--spotify-muted);text-align:right;"><span id="char-remaining">2000</span> characters remaining</div>
+      </div>
+      <button class="spotify-btn spotify-btn-primary" type="submit">Send Announcement</button>
+    </form>
+  </div>
+
+  {% if announcements %}
+  <div style="margin-top:24px;">
+    <div class="spotify-section-header"><h2>Past Announcements</h2></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      {% for a in announcements %}
+      <div class="panel" style="padding:14px 16px;">
+        <div style="font-weight:700;margin-bottom:4px;">{{ a.title }}</div>
+        <div style="color:var(--spotify-muted);margin-bottom:4px;font-size:13px;">{{ a.message }}</div>
+        <div style="font-size:11px;color:var(--spotify-border);">{{ a.created_at[:16] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function charCount(el) {
+  const remaining = el.maxLength - el.value.length;
+  document.getElementById("char-remaining").textContent = remaining;
+}
+</script>
+{% endblock %}

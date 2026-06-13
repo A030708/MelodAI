@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}Follow Artists — MelodAI{% endblock %}
+{% block subtitle %}Select your favorite artists{% endblock %}
+{% block content %}
+<style>
+.onboarding-wrap {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 64px;
+  min-height: calc(100vh - 65px);
+  background: radial-gradient(ellipse at 50% 0%, rgba(30,215,96,0.06) 0%, transparent 50%), var(--bg-base);
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+
+.onboarding-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.onboarding-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.onboarding-header .selected-count {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--spotify-green);
+  font-weight: 600;
+}
+
+.artist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 880px;
+  margin-bottom: 32px;
+}
+
+.artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px 16px;
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  user-select: none;
+  position: relative;
+}
+
+.artist-card:hover {
+  background: var(--bg-highlight);
+  transform: translateY(-2px);
+}
+
+.artist-card.selected {
+  border-color: var(--spotify-green);
+  background: rgba(30,215,96,0.06);
+}
+
+.artist-card.selected .card-checkmark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.artist-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: var(--text-subdued);
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.artist-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-checkmark {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--spotify-green);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.artist-name {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+  color: var(--text-base);
+}
+
+.artist-genre {
+  font-size: 11px;
+  color: var(--text-subdued);
+  text-align: center;
+}
+
+.onboarding-continue {
+  padding: 14px 48px;
+  border: none;
+  border-radius: 500px;
+  background: var(--spotify-green);
+  color: #000;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.onboarding-continue:hover:not(:disabled) {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(30,215,96,0.3);
+}
+
+.onboarding-continue:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.onboarding-skip {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-subdued);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.onboarding-skip:hover {
+  color: var(--text-base);
+}
+
+@media (max-width: 600px) {
+  .artist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .artist-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+}
+</style>
+
+<div class="onboarding-wrap">
+  <div class="onboarding-header">
+    <h1>Follow Artists</h1>
+    <p>Select at least 3 artists you enjoy. We'll personalize your recommendations based on their music.</p>
+    <div class="selected-count" id="selected-count">0 selected</div>
+  </div>
+
+  {% if msg %}
+    <div style="background:rgba(243,114,127,0.08);border:1px solid rgba(243,114,127,0.2);border-radius:8px;padding:10px 16px;font-size:13px;color:var(--text-negative);margin-bottom:16px;max-width:880px;width:100%;">{{ msg }}</div>
+  {% endif %}
+
+  <form id="onboarding-form" method="POST" action="/onboarding/select">
+    <div class="artist-grid" id="artist-grid">
+      {% for a in artists %}
+      <div class="artist-card" data-id="{{ a.id }}" onclick="toggleArtist(this)">
+        <div class="artist-avatar">
+          {% if a.profile_pic and a.profile_pic != 'default_artist.png' %}
+            <img src="/uploads/profiles/{{ a.profile_pic }}" alt="{{ a.stage_name }}">
+          {% else %}
+            🎵
+          {% endif %}
+          <div class="card-checkmark">✓</div>
+        </div>
+        <div class="artist-name">{{ a.stage_name }}</div>
+        {% if a.genre %}
+          <div class="artist-genre">{{ a.genre }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <button class="onboarding-continue" id="continue-btn" type="submit" disabled>Continue</button>
+      <a href="/" class="onboarding-skip">Skip for now</a>
+    </div>
+  </form>
+</div>
+
+<script>
+var selectedIds = new Set();
+
+function toggleArtist(el) {
+  var id = el.dataset.id;
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    el.classList.remove('selected');
+  } else {
+    selectedIds.add(id);
+    el.classList.add('selected');
+  }
+  updateForm();
+}
+
+function updateForm() {
+  var count = selectedIds.size;
+  document.getElementById('selected-count').textContent = count + ' selected';
+  document.getElementById('continue-btn').disabled = count < 3;
+
+  var existing = document.querySelectorAll('input[name="artist_ids"]');
+  for (var i = 0; i < existing.length; i++) {
+    existing[i].remove();
+  }
+  var form = document.getElementById('onboarding-form');
+  selectedIds.forEach(function(id) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'artist_ids';
+    input.value = id;
+    form.appendChild(input);
+  });
+}
+</script>
+{% endblock %}

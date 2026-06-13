@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Artist Management{% endblock %}
+{% block subtitle %}Manage platform artists{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+{% block content %}
+<div class="spotify-dashboard">
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ artists|length }}</div>
+      <div class="stat-label">Total Artists</div>
+    </div>
+  </div>
+
+  <div class="spotify-section-header"><h2>All Artists</h2></div>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Stage Name</th>
+        <th>Email</th>
+        <th>Genre</th>
+        <th>Status</th>
+        <th>Invite</th>
+        <th>Earnings</th>
+        <th>Listeners</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in artists %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.stage_name }}</td>
+        <td>{{ a.email }}</td>
+        <td><span class="chip">{{ a.genre or '—' }}</span></td>
+        <td>
+          {% if a.verified %}
+            <span class="chip" style="background:rgba(30,215,96,0.12);color:var(--spotify-green);border-color:rgba(30,215,96,0.2);">Verified</span>
+          {% else %}
+            <span class="chip" style="color:var(--text-subdued);">Unverified</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if a.invite_used %}
+            <span class="chip" style="background:rgba(30,215,96,0.12);color:var(--spotify-green);border-color:rgba(30,215,96,0.2);">Registered</span>
+          {% else %}
+            <span class="chip" style="color:var(--text-warning);border-color:rgba(255,164,43,0.3);">Pending</span>
+          {% endif %}
+        </td>
+        <td>${{ "%.2f"|format(a.total_earnings) }}</td>
+        <td>{{ a.monthly_listeners or 0 }}</td>
+        <td style="display:flex;gap:6px;">
+          <form method="POST" action="/admin/artists/{{ a.id }}/ban" onsubmit="return confirm('{% if a.is_active %}Ban{% else %}Unban{% endif %} this artist?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="spotify-btn spotify-btn-red spotify-btn-small" type="submit">
+              {% if a.is_active %}Ban{% else %}Unban{% endif %}
+            </button>
+          </form>
+          <form method="POST" action="/admin/artists/{{ a.id }}/delete" onsubmit="return confirm('Delete this artist and all their songs? This cannot be undone.')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="spotify-btn spotify-btn-red spotify-btn-small" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="admin-actions">
+    <a class="spotify-btn spotify-btn-primary" href="/admin/add-artist">Add Artist</a>
+    <a class="spotify-btn spotify-btn-secondary" href="/admin/dashboard">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

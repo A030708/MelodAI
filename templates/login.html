@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sign in to MelodAI — AI-Powered Music Discovery">
+  <title>Sign In — MelodAI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #0a0a0a;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Fullscreen Background ── */
+    .login-bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('/static/bg/signin_baxckground.jpeg');
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .login-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(5, 15, 30, 0.55) 40%,
+        rgba(0, 0, 0, 0.70) 100%
+      );
+    }
+
+    /* ── Animated Particles ── */
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(29, 185, 84, 0.15);
+      animation: float-up linear infinite;
+    }
+
+    @keyframes float-up {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* ── Main Layout ── */
+    .login-container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* ── Logo Section ── */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: fadeSlideDown 0.6s ease-out;
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-circle {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #1db954, #1ed760);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      box-shadow:
+        0 0 40px rgba(29, 185, 84, 0.4),
+        0 0 80px rgba(29, 185, 84, 0.15),
+        0 4px 20px rgba(0, 0, 0, 0.5);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 40px rgba(29, 185, 84, 0.4), 0 0 80px rgba(29, 185, 84, 0.15), 0 4px 20px rgba(0, 0, 0, 0.5); }
+      50% { box-shadow: 0 0 60px rgba(29, 185, 84, 0.5), 0 0 120px rgba(29, 185, 84, 0.2), 0 4px 20px rgba(0, 0, 0, 0.5); }
+    }
+
+    .brand-name {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .brand-tagline {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ── Glass Card ── */
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(18, 18, 18, 0.75);
+      backdrop-filter: blur(40px) saturate(1.6);
+      -webkit-backdrop-filter: blur(40px) saturate(1.6);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 32px 80px rgba(0, 0, 0, 0.6),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+      padding: 44px 40px 40px;
+      animation: fadeSlideUp 0.6s ease-out 0.15s both;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.45);
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* ── Flash Messages ── */
+    .flash-error {
+      background: rgba(231, 76, 60, 0.12);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      color: #ff6b6b;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 20px;
+      animation: shake 0.4s ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    /* ── Form Fields ── */
+    .field-group {
+      margin-bottom: 22px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 0 18px;
+      height: 54px;
+      transition: all 0.3s ease;
+    }
+
+    .input-wrapper:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .input-wrapper:focus-within {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(29, 185, 84, 0.6);
+      box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.1);
+    }
+
+    .input-icon {
+      font-size: 18px;
+      margin-right: 12px;
+      opacity: 0.4;
+      flex-shrink: 0;
+      transition: opacity 0.3s;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+      opacity: 0.7;
+    }
+
+    .field-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 15px;
+      font-family: inherit;
+      height: 100%;
+    }
+
+    .field-input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%;
+      height: 56px;
+      background: linear-gradient(135deg, #1db954, #1ed760);
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px rgba(29, 185, 84, 0.35);
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(29, 185, 84, 0.5);
+    }
+
+    .submit-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0 24px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .divider span {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* ── Bottom Links ── */
+    .bottom-text {
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 24px;
+    }
+
+    .bottom-link {
+      color: #1ed760;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .bottom-link:hover {
+      color: #1fdf64;
+      text-shadow: 0 0 12px rgba(29, 185, 84, 0.4);
+    }
+
+    /* ── Footer ── */
+    .login-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.2);
+      z-index: 2;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 32px 24px 28px;
+        border-radius: 20px;
+      }
+      .card-title { font-size: 24px; }
+      .brand-name { font-size: 28px; }
+      .input-wrapper { height: 50px; border-radius: 12px; }
+      .submit-btn { height: 50px; border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="login-bg"></div>
+
+  <!-- Floating Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Main Content -->
+  <div class="login-container">
+
+    <!-- Logo -->
+    <div class="logo-section">
+      <div class="logo-circle">
+        <span>♪</span>
+      </div>
+      <h1 class="brand-name">MelodAI</h1>
+      <p class="brand-tagline">Your personal music curator</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+      <h2 class="card-title">Welcome Back</h2>
+      <p class="card-subtitle">Sign in to discover your next favorite track</p>
+
+      {% if msg %}
+        <div class="flash-error">{{ msg }}</div>
+      {% endif %}
+
+      <form method="POST" action="/login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="field-group">
+          <label class="field-label">Email or Username</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉</span>
+            <input type="text"
+                   name="identifier"
+                   class="field-input"
+                   placeholder="user@email.com"
+                   autocomplete="username"
+                   required>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password"
+                   name="password"
+                   class="field-input"
+                   placeholder="••••••••"
+                   autocomplete="current-password"
+                   required>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign In</button>
+      </form>
+
+      <div class="divider"><span>New to MelodAI?</span></div>
+
+      <p class="bottom-text">
+        <a href="/register" class="bottom-link">Create your free account →</a>
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="login-footer">
+    MelodAI · AI-Powered Music Recommendations · Independent Artists
+  </div>
+
+  <!-- Particle Animation Script -->
+  <script>
+    (function() {
+      const container = document.getElementById('particles');
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 6 + 2;
+        const left = Math.random() * 100;
+        const dur = Math.random() * 12 + 8;
+        const delay = Math.random() * 10;
+        const hue = Math.random() > 0.5 ? '142' : '200';
+        p.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${left}%;
+          animation-duration: ${dur}s;
+          animation-delay: ${delay}s;
+          background: hsla(${hue}, 70%, 55%, ${Math.random() * 0.15 + 0.05});
+        `;
+        container.appendChild(p);
+      }
+    })();
+  </script>
+
+</body>
+</html>

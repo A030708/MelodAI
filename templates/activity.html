@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}MelodAI — Your Listening Activity{% endblock %}
+{% block subtitle %}Every song you've listened to, and for how long{% endblock %}
+{% block content %}
+<section class="content" style="max-width:800px;margin:0 auto;padding:20px 24px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
+    <h2 style="margin:0;font-size:20px;font-weight:600;">Listening Activity</h2>
+    <span style="font-size:13px;color:var(--text-secondary);background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;">
+      Total: {{ total_time }}
+    </span>
+  </div>
+
+  {% if rows %}
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="color:var(--text-subdued);border-bottom:1px solid rgba(255,255,255,0.08);">
+          <th style="text-align:left;padding:10px 8px;font-weight:500;">#</th>
+          <th style="text-align:left;padding:10px 8px;font-weight:500;">Song</th>
+          <th style="text-align:left;padding:10px 8px;font-weight:500;">Artist</th>
+          <th style="text-align:left;padding:10px 8px;font-weight:500;">Genre</th>
+          <th style="text-align:right;padding:10px 8px;font-weight:500;">Plays</th>
+          <th style="text-align:right;padding:10px 8px;font-weight:500;">Time Listened</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
+          <td style="padding:12px 8px;color:var(--text-subdued);">{{ loop.index }}</td>
+          <td style="padding:12px 8px;">
+            <a href="/?play={{ r.song_id }}" style="color:inherit;text-decoration:none;">
+              <strong>{{ r.title }}</strong>
+            </a>
+          </td>
+          <td style="padding:12px 8px;color:var(--text-secondary);">{{ r.artist }}</td>
+          <td style="padding:12px 8px;color:var(--text-secondary);font-size:12px;">
+            <span class="chip" style="font-size:10px;padding:2px 8px;">{{ r.genre }}</span>
+          </td>
+          <td style="padding:12px 8px;text-align:right;">{{ r.play_count }}</td>
+          <td style="padding:12px 8px;text-align:right;font-weight:500;color:var(--accent);">{{ r.time_fmt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:60px 20px;color:var(--text-subdued);">
+    <div style="font-size:48px;margin-bottom:12px;">&#9835;</div>
+    <p>No listening activity yet — start playing songs from the recommendations page!</p>
+    <a class="btn" href="/" style="margin-top:12px;">Discover Music</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

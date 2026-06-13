@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Add Artist{% endblock %}
+{% block subtitle %}Onboard a new artist{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-card-glow"></div>
+      <div class="auth-card-content">
+        <div class="auth-header">
+          <h2 class="auth-title">Add New Artist</h2>
+          <p class="auth-sub">Fill in the artist's details. An invite code will be generated.</p>
+        </div>
+
+        {% if msg %}
+          <div class="auth-success">
+            {{ msg }}
+            {% if email and password %}
+              <div style="margin-top:12px;padding:12px;background:rgba(30,215,96,0.1);border-radius:10px;font-size:13px;">
+                <strong>Login Credentials</strong><br>
+                Email: <strong>{{ email }}</strong><br>
+                Password: <strong>{{ password }}</strong>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form" id="add-artist-form">
+          <div class="auth-field">
+            <label class="auth-label" for="stage_name">Stage Name</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">🎤</span>
+              <input class="auth-input" id="stage_name" name="stage_name" type="text" placeholder="Artist Name" required>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="email">Email</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">✉️</span>
+              <input class="auth-input" id="email" name="email" type="email" placeholder="artist@email.com" required>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="genre">Genre</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">🎵</span>
+              <input class="auth-input" id="genre" name="genre" type="text" placeholder="Pop, Rock, Hip-Hop...">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="bio">Bio</label>
+            <div class="auth-input-wrap" style="align-items: flex-start;">
+              <span class="auth-input-icon" style="padding-top: 14px;">📝</span>
+              <textarea class="auth-input auth-textarea" id="bio" name="bio" rows="3" placeholder="Short biography..." style="resize:vertical;"></textarea>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="password">Password</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">🔒</span>
+              <input class="auth-input" id="password" name="password" type="password" placeholder="Set login password" required>
+            </div>
+          </div>
+
+          <button class="auth-btn" type="submit">Create Artist</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

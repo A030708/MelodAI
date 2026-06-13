@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% block title %}MelodAI — Discover{% endblock %}
+{% block subtitle %}Discover music from independent artists{% endblock %}
+{% block content %}
+  <aside class="sidebar">
+    <div class="panel">
+      <div class="panel-title">Your Activity</div>
+      <div class="chips">
+        <span class="chip" data-count="play">▶ {{ counts.get('play', 0) }}</span>
+        <span class="chip" data-count="like">♥ {{ counts.get('like', 0) }}</span>
+        <span class="chip" data-count="skip">⏭ {{ counts.get('skip', 0) }}</span>
+      </div>
+      {% if listening_time %}
+      <div style="font-size:12px;color:var(--text-subdued);padding:4px 2px 2px;">
+        {{ listening_time }} listened
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/reset" class="reset-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="genre" value="{{ genre }}">
+        <input type="hidden" name="alpha" value="{{ alpha }}">
+        <input type="hidden" name="k" value="{{ k }}">
+        <input type="hidden" name="pool" value="{{ pool }}">
+        <button class="btn danger" type="submit">RESET HISTORY</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Trending Now</div>
+      <ul class="trending">
+        {% for t in trending %}
+          <li>
+            <a href="/?play=uploaded_{{ t.id }}" style="display:block;color:inherit;text-decoration:none;">
+              <div class="t-title">{{ t.title }}</div>
+              <div class="t-artist">{{ t.artist }}</div>
+            </a>
+          </li>
+        {% else %}
+          <li style="color:var(--text-subdued);font-size:13px;padding:8px 0;">No trending songs yet — upload some music!</li>
+        {% endfor %}
+      </ul>
+      <div class="panel">
+        <div class="panel-title">Playlists</div>
+        <form method="POST" action="/user/playlists" style="display:flex;gap:6px;margin-bottom:10px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="text" name="name" placeholder="New playlist..." required
+            style="flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:12px;">
+          <button class="btn" type="submit" style="padding:6px 10px;font-size:11px;">+</button>
+        </form>
+        {% if playlists %}
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            {% for p in playlists %}
+              <a href="/user/playlists/{{ p.id }}" style="font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.04);text-decoration:none;color:var(--text-secondary);display:block;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">{{ p.name }}</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="font-size:11px;color:var(--text-subdued);">No playlists yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </aside>
+
+  <section class="content">
+    <div class="section-header">
+      <h2>Recommendations</h2>
+    </div>
+
+    <!-- Mood filter pills -->
+    <div style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+      <span style="font-size:11px;color:var(--text-subdued);margin-right:4px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Mood</span>
+      <a href="/?genre={{ genre }}&alpha={{ alpha }}&k={{ k }}&pool={{ pool }}&collab={{ collab_weight }}"
+         class="chip" style="{% if not active_mood %}background:var(--spotify-green);color:#000;border-color:var(--spotify-green);font-weight:700;{% endif %}cursor:pointer;">All</a>
+      {% for m in moods %}
+        <a href="/?mood={{ m }}&genre={{ genre }}&alpha={{ alpha }}&k={{ k }}&pool={{ pool }}&collab={{ collab_weight }}"
+           class="chip" style="{% if active_mood == m %}background:var(--spotify-green);color:#000;border-color:var(--spotify-green);font-weight:700;{% endif %}text-transform:capitalize;cursor:pointer;">{{ m }}</a>
+      {% endfor %}
+    </div>
+
+    <!-- Controls form -->
+    <div class="controls" style="margin-bottom:20px;">
+      <form method="GET" action="/" style="display:flex;flex-wrap:wrap;gap:10px;align-items:end;">
+        <div class="control">
+          <label>Genre</label>
+          <select name="genre" required>
+            {% for g in genres %}
+              <option value="{{ g }}" {% if g == genre %}selected{% endif %}>{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="control">
+          <label>Alpha</label>
+          <input name="alpha" type="number" step="0.05" min="0" max="1" value="{{ alpha }}" required style="width:90px;">
+        </div>
+
+        <div class="control">
+          <label>K</label>
+          <input name="k" type="number" min="5" max="30" value="{{ k }}" required style="width:80px;">
+        </div>
+
+        <div class="control">
+          <label>Speed</label>
+          <select name="pool" required style="width:130px;">
+            <option value="5000" {% if pool == 5000 %}selected{% endif %}>Fast (5k)</option>
+            <option value="10000" {% if pool == 10000 %}selected{% endif %}>Balanced (10k)</option>
+            <option value="20000" {% if pool == 20000 %}selected{% endif %}>Accurate (20k)</option>
+            <option value="50000" {% if pool == 50000 %}selected{% endif %}>Max (50k)</option>
+          </select>
+        </div>
+
+        <button class="btn primary" type="submit">REFRESH</button>
+      </form>
+    </div>
+
+    {% if recommendations|length == 0 %}
+      <div class="panel" style="text-align:center;padding:48px 24px;color:var(--text-subdued);">
+        <div style="font-size:48px;margin-bottom:16px;opacity:0.3;">♪</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">No recommendations yet</div>
+        <div style="font-size:13px;">Artists need to upload songs first, or try changing the genre filter.</div>
+      </div>
+    {% else %}
+      <div class="grid">
+        {% for r in recommendations %}
+          <article class="card" data-sid="{{ r.song_id }}">
+            <div class="cover">
+              {% if r.cover_art %}
+                <img src="/uploads/{{ r.cover_art }}" alt="{{ r.title }}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+              {% elif r.profile_pic and r.profile_pic != 'default_artist.png' %}
+                <img src="/uploads/profiles/{{ r.profile_pic }}" alt="{{ r.artist }}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+              {% else %}
+                <div class="cover-placeholder">♪</div>
+              {% endif %}
+            </div>
+
+            <div class="meta">
+              <div class="song-title">{{ r.title }}</div>
+              <div class="song-artist">{{ r.artist }}</div>
+
+              <div class="row">
+                <span class="badge">{{ r.genre }}</span>
+                <span class="score">{{ "%.3f"|format(r.score) }}</span>
+              </div>
+
+              {% if r.explanation %}
+                <div class="tag" style="margin-top:6px;font-size:11px;">
+                  {{ r.explanation }}
+                </div>
+              {% endif %}
+
+              <div class="actions">
+                <button class="btn event-btn" data-song-id="{{ r.song_id }}" data-event-type="play" data-csrf="{{ csrf_token }}" data-id="{{ r.id }}">▶ Play</button>
+                <button class="btn success event-btn" data-song-id="{{ r.song_id }}" data-event-type="like" data-csrf="{{ csrf_token }}">♡ Like</button>
+                <button class="btn ghost event-btn" data-song-id="{{ r.song_id }}" data-event-type="skip" data-csrf="{{ csrf_token }}">⏭ Skip</button>
+                <button class="btn ghost event-btn" data-song-id="{{ r.song_id }}" data-event-type="addq" data-csrf="{{ csrf_token }}" data-id="{{ r.id }}" data-title="{{ r.title }}" data-artist="{{ r.artist }}">+ Queue</button>
+
+                {% if playlists %}
+                <form method="POST" action="/user/playlists/{{ playlists[0].id }}/add" style="display:inline-flex;gap:4px;align-items:center;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <input type="hidden" name="song_id" value="{{ r.song_id }}">
+                  <select name="playlist_id" onchange="this.form.action='/user/playlists/'+this.value+'/add'"
+                    style="padding:6px 10px;border-radius:var(--radius-full);border:1px solid var(--border-default);background:var(--bg-elevated);color:var(--text-secondary);font-size:11px;font-family:inherit;">
+                    {% for p in playlists %}
+                      <option value="{{ p.id }}">{{ p.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <button class="btn" type="submit" style="font-size:10px;padding:6px 10px;">+ Add</button>
+                </form>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+<script>
+(function() {
+  'use strict';
+
+  document.querySelectorAll('.event-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      var songId = btn.dataset.songId;
+      var eventType = btn.dataset.eventType;
+      var csrf = btn.dataset.csrf;
+
+      fetch('/event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRF-Token': csrf
+        },
+        body: 'csrf_token=' + encodeURIComponent(csrf) +
+              '&song_id=' + encodeURIComponent(songId) +
+              '&event_type=' + encodeURIComponent(eventType)
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Event failed');
+
+        var countType = eventType === 'unlike' ? 'like' : eventType;
+        var chip = document.querySelector('.chip[data-count="' + countType + '"]');
+        if (chip) {
+          var num = parseInt(chip.textContent.match(/\d+/)) || 0;
+          var delta = eventType === 'unlike' ? -1 : 1;
+          chip.textContent = chip.textContent.replace(/\d+/, Math.max(0, num + delta));
+        }
+
+        if (eventType === 'like' || eventType === 'unlike') {
+          if (btn.textContent.trim().startsWith('\u2661')) {
+            btn.textContent = '\u2665 Liked';
+            btn.style.color = '#1ed760';
+            btn.dataset.eventType = 'unlike';
+          } else {
+            btn.textContent = '\u2661 Like';
+            btn.style.color = '';
+            btn.dataset.eventType = 'like';
+          }
+          showToast(eventType === 'like' ? '\u2665 Liked' : '\u2661 Unliked');
+        } else if (eventType === 'skip') {
+          var card = btn.closest('.card');
+          if (card) {
+            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(40px)';
+            setTimeout(function() { card.remove(); }, 350);
+          }
+          showToast('\u23ED Skipped');
+        }
+      })['catch'](function(err) {
+        console.error('Event error:', err);
+        showToast('Action failed');
+      });
+    });
+  });
+
+  // ── ?play= param: play song on page load ──
+  var params = new URLSearchParams(window.location.search);
+  var playId = params.get('play');
+  if (playId) {
+    var btn = document.querySelector('.event-btn[data-song-id="' + playId + '"]');
+    if (btn) btn.click();
+  }
+  function showToast(message) {
+    var toast = document.getElementById('melodai-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'melodai-toast';
+      toast.style.cssText = [
+        'position: fixed', 'bottom: 28px', 'left: 50%',
+        'transform: translateX(-50%)',
+        'background: rgba(255,255,255,0.12)',
+        'backdrop-filter: blur(14px)',
+        'color: #fff', 'padding: 10px 26px',
+        'border-radius: 24px', 'font-size: 13px',
+        'font-weight: 500', 'z-index: 9999',
+        'border: 1px solid rgba(255,255,255,0.18)',
+        'box-shadow: 0 4px 24px rgba(0,0,0,0.3)',
+        'transition: opacity 0.35s ease',
+        'pointer-events: none'
+      ].join(';');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    setTimeout(function() { toast.style.opacity = '0'; }, 2200);
+  }
+})();
+</script>
+{% endblock %}

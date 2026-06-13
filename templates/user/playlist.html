@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Playlists{% endblock %}
+{% block subtitle %}{{ 'Shared Playlist' if shared else 'Manage your playlists' }}{% endblock %}
+{% block content %}
+<div style="grid-column:1/-1;">
+
+  {% if error %}
+    <div class="panel muted" style="text-align:center;padding:40px;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.3;">♪</div>
+      <div style="font-weight:700;font-size:16px;">Playlist not found</div>
+      <div class="muted small">This link may be invalid or the playlist was deleted.</div>
+    </div>
+
+  {% elif playlist %}
+    <div class="section-header">
+      <h2>{{ playlist.name }}</h2>
+      {% if not shared %}
+        <button class="btn" onclick="copyShareLink()" style="font-size:11px;">🔗 Share</button>
+      {% endif %}
+    </div>
+    <div class="muted" style="margin-bottom:14px;">
+      {{ playlist.description or '' }}
+      {% if shared %}
+        · by <strong>{{ playlist.username }}</strong>
+      {% endif %}
+    </div>
+
+    {% if songs %}
+      <div class="grid">
+        {% for s in songs %}
+          <article class="card" data-sid="{{ s.song_id }}">
+            <div class="cover">{% if s.cover_art %}<img src="/uploads/{{ s.cover_art }}" alt="{{ s.title }}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">{% elif s.profile_pic and s.profile_pic != 'default_artist.png' %}<img src="/uploads/profiles/{{ s.profile_pic }}" alt="{{ s.artist }}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">{% else %}<div class="cover-placeholder">♪</div>{% endif %}</div>
+            <div class="meta">
+              <div class="song-title">{{ s.title }}</div>
+              <div class="song-artist">{{ s.artist }}</div>
+              <div class="actions" style="margin-top:10px;">
+                <button class="btn event-btn" data-song-id="{{ s.song_id }}" data-event-type="play" data-id="{{ s.id }}">▶ Play</button>
+                {% if not shared %}
+                <form method="POST" action="/user/playlists/{{ playlist.id }}/songs/{{ s.song_id }}/delete" style="display:inline;"
+                  onsubmit="event.preventDefault();var f=this;fetch(f.action,{method:'DELETE'}).then(function(){f.closest('.card').remove();});">
+                  <button class="btn danger" style="padding:4px 10px;font-size:11px;">Remove</button>
+                </form>
+                {% endif %}
+                <span style="font-size:11px;color:var(--text-subdued);margin-left:auto;">{{ s.added_at[:10] }}</span>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="panel muted">This playlist is empty.</div>
+    {% endif %}
+
+    {% if not shared %}
+    <a href="/user/playlists" class="btn" style="margin-top:12px;">← Back to Playlists</a>
+    {% endif %}
+
+    <script>
+    function copyShareLink() {
+      var url = window.location.origin + '/user/playlists/shared/{{ playlist.share_id }}';
+      navigator.clipboard.writeText(url).then(function() {
+        showToast('Share link copied!');
+      })['catch'](function() {
+        prompt('Copy this link:', url);
+      });
+    }
+    </script>
+
+  {% else %}
+
+    <div class="auth-card" style="max-width:500px;margin-bottom:18px;">
+      <div class="auth-title">Create Playlist</div>
+      <form method="POST">
+        <div class="auth-row">
+          <label>Name</label>
+          <input name="name" type="text" placeholder="My Playlist" required>
+        </div>
+        <div class="auth-row">
+          <label>Description</label>
+          <input name="description" type="text" placeholder="Optional description">
+        </div>
+        <button class="btn primary" type="submit">Create</button>
+      </form>
+    </div>
+
+    <div class="section-header"><h2>Your Playlists</h2></div>
+    {% if playlists %}
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+        {% for p in playlists %}
+          <a href="/user/playlists/{{ p.id }}" class="card" style="grid-template-columns:1fr;padding:16px;text-decoration:none;">
+            <div style="font-weight:800;font-size:16px;">{{ p.name }}</div>
+            <div style="font-size:12px;color:var(--muted2);">
+              {{ p.description or 'No description' }} · {{ p.song_count }} songs
+            </div>
+            <div class="muted small">{{ p.created_at[:10] }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="panel muted">No playlists yet. Create one above.</div>
+    {% endif %}
+
+  {% endif %}
+</div>
+{% endblock %}
