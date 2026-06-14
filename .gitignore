@@ -14,3 +14,5 @@ artifacts/*.npy
 artifacts/*.npz
 artifacts/*.joblib
 artifacts/*.parquet
+
+desktop.ini
