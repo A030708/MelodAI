@@ -8,3 +8,9 @@ uploads/covers/
 uploads/profiles/
 uploads/songs/
 *.crdownload
+.venv/
+.pytest_cache/
+artifacts/*.npy
+artifacts/*.npz
+artifacts/*.joblib
+artifacts/*.parquet
